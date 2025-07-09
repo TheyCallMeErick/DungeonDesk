@@ -1,0 +1,11 @@
+namespace DungeonDeskBackend.Domain.Models; 
+
+public class Adventure : BaseModel
+{
+    public string Title { get; set; }
+    public string Description { get; set; } 
+    public string AuthorId { get; set; } 
+    public Player Author { get; set; }
+
+    public ICollection<Desk> DesksUsingThis { get; set; } = new List<Desk>();
+}

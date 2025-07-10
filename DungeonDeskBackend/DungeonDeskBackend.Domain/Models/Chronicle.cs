@@ -8,6 +8,6 @@ public class Chronicle : BaseModel
     public Guid SessionId { get; set; }
     public Session Session { get; set; }
 
-    public string AuthorId { get; set; }
+    public Guid AuthorId { get; set; }
     public Player Author { get; set; }
 }

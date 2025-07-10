@@ -4,11 +4,9 @@ namespace  DungeonDeskBackend.Domain.Models;
 
 public class Desk : BaseModel
 {
-    public ICollection<Player> Players { get; set; }
+    public ICollection<PlayerDesk> PlayerDesks { get; set; } = new List<PlayerDesk>();
     public string Name { get; set; }
     public string Description { get; set; }
-    public string MasterId { get; set; }
-    public Player Master { get; set; }
     public ETableStatus Status { get; set; }
     public int MaxPlayers { get; set; }
     public ICollection<Session> Sessions { get; set; }

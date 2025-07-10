@@ -18,4 +18,5 @@ public class DungeonDeskDbContext : DbContext
     public DbSet<Domain.Models.Player> Players { get; set; }
     public DbSet<Domain.Models.Session> Sessions { get; set; }
     public DbSet<Domain.Models.Adventure> Adventures { get; set; }
+    public DbSet<Domain.Models.PlayerDesk> PlayerDesks { get; set; }
 }

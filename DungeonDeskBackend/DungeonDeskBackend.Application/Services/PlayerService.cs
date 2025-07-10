@@ -1,15 +1,15 @@
 using DungeonDeskBackend.Application.Data;
-using DungeonDeskBackend.Application.Services.PlayerService;
+using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DungeonDeskBackend.Application.Services;
 
-public class PlayerServiceImpl : IPlayerService
+public class PlayerService : IPlayerService
 {
     private readonly DungeonDeskDbContext _context;
 
-    public PlayerServiceImpl(DungeonDeskDbContext context)
+    public PlayerService(DungeonDeskDbContext context)
     {
         _context = context;
     }
@@ -60,11 +60,42 @@ public class PlayerServiceImpl : IPlayerService
 
     public async Task<List<Desk>> GetDesksByPlayerIdAsync(Guid playerId)
     {
-        var player = await _context.Players.Include(p => p.Desks).FirstOrDefaultAsync(p => p.Id == playerId);
+        var player = await _context.Players.Include(p => p.PlayerDesks).FirstOrDefaultAsync(p => p.Id == playerId);
         if (player == null)
         {
             throw new KeyNotFoundException("Player not found");
         }
-        return player.Desks.ToList();
+        return player.PlayerDesks.Select(x=>x.Desk).ToList();
+    }
+
+    public Task<Desk> JoinDeskAsync(Guid playerId, Guid deskId)
+    {
+        var player = _context.Players.Find(playerId);
+        if (player == null)
+        {
+            throw new KeyNotFoundException("Player not found");
+        }
+
+        var desk = _context.Desks.Find(deskId);
+        if (desk == null)
+        {
+            throw new KeyNotFoundException("Desk not found");
+        }
+
+        if(desk.PlayerDesks.Count >= desk.MaxPlayers)
+        {
+            throw new InvalidOperationException("Desk is full");
+        }
+        player.PlayerDesks.Add(new PlayerDesk
+        {
+            PlayerId = player.Id,
+            DeskId = desk.Id,
+            Role = "Player",
+            JoinedAt = DateTime.UtcNow
+        });
+        _context.Players.Update(player);
+        _context.SaveChanges();
+
+        return Task.FromResult(desk);
     }
 }

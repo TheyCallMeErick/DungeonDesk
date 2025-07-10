@@ -1,0 +1,19 @@
+using Bogus;
+using DungeonDeskBackend.Domain.Models;
+
+namespace DungeonDeskBackend.Tests.Fixtures.Fakers; 
+
+public class PlayerFaker
+{
+    public static Faker<Player> Make()
+    {
+        return new Faker<Player>()
+            .RuleFor(p => p.Id, f => Guid.NewGuid())
+            .RuleFor(p => p.CreatedAt, f => f.Date.Past())
+            .RuleFor(p => p.Email, f => f.Internet.Email())
+            .RuleFor(p => p.Password, f => "")
+            .RuleFor(p => p.Name, f => f.Person.Name);
+    }
+
+    public static Player MakeOne() => Make().Generate();
+}

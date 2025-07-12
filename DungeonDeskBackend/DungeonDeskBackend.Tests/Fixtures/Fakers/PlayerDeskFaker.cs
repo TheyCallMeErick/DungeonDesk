@@ -1,4 +1,5 @@
 using Bogus;
+using DungeonDeskBackend.Domain.Enums;
 using DungeonDeskBackend.Domain.Models;
 
 namespace DungeonDeskBackend.Tests.Fixtures.Fakers; 
@@ -11,7 +12,7 @@ public class PlayerDeskFaker
             .RuleFor(pd => pd.PlayerId, f => Guid.NewGuid())
             .RuleFor(pd => pd.DeskId, f => Guid.NewGuid())
             .RuleFor(pd => pd.JoinedAt, f => f.Date.Past())
-            .RuleFor(pd => pd.Role, f => f.PickRandom(new List<string>{"Jogador", "Narrador", "Convidado"}));
+            .RuleFor(pd => pd.Role, f => f.PickRandom<EPlayerDeskRole>());
     }
 
     public static PlayerDesk MakeOne() => Make().Generate();

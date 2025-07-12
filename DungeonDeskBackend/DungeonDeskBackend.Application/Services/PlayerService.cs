@@ -1,5 +1,6 @@
 using DungeonDeskBackend.Application.Data;
 using DungeonDeskBackend.Application.Services.Interfaces;
+using DungeonDeskBackend.Domain.Enums;
 using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -90,7 +91,7 @@ public class PlayerService : IPlayerService
         {
             PlayerId = player.Id,
             DeskId = desk.Id,
-            Role = "Player",
+            Role = EPlayerDeskRole.Player,
             JoinedAt = DateTime.UtcNow
         });
         _context.Players.Update(player);

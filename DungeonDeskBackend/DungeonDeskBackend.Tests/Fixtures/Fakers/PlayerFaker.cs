@@ -1,7 +1,7 @@
 using Bogus;
 using DungeonDeskBackend.Domain.Models;
 
-namespace DungeonDeskBackend.Tests.Fixtures.Fakers; 
+namespace DungeonDeskBackend.Tests.Fixtures.Fakers;
 
 public class PlayerFaker
 {
@@ -16,4 +16,12 @@ public class PlayerFaker
     }
 
     public static Player MakeOne() => Make().Generate();
+
+    public static IEnumerable<Player> MakeMany(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            yield return MakeOne();
+        }
+    }
 }

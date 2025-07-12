@@ -1,11 +1,11 @@
 using Bogus;
 using DungeonDeskBackend.Domain.Models;
 
-namespace DungeonDeskBackend.Tests.Fixtures.Fakers; 
+namespace DungeonDeskBackend.Tests.Fixtures.Fakers;
 
 public class AdventureFaker
 {
-   public static Faker<Adventure> Make()
+    public static Faker<Adventure> Make()
     {
         return new Faker<Adventure>()
             .RuleFor(a => a.Id, f => Guid.NewGuid())
@@ -16,4 +16,10 @@ public class AdventureFaker
     }
 
     public static Adventure MakeOne() => Make().Generate();
+    public static IEnumerable<Adventure> MakeMany(int count) {
+        for (int i = 0; i < count; i++)
+        {
+            yield return MakeOne();
+        }
+    }
 }

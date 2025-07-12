@@ -1,7 +1,7 @@
 using Bogus;
 using DungeonDeskBackend.Domain.Models;
 
-namespace DungeonDeskBackend.Tests.Fixtures.Fakers; 
+namespace DungeonDeskBackend.Tests.Fixtures.Fakers;
 
 public class SessionFaker
 {
@@ -18,4 +18,12 @@ public class SessionFaker
     }
 
     public static Session MakeOne() => Make().Generate();
+
+    public static IEnumerable<Session> MakeMany(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            yield return MakeOne();
+        }
+    }
 }

@@ -2,7 +2,7 @@ using DungeonDeskBackend.Application.Data;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Models;
 
-namespace DungeonDeskBackend.Application.Services; 
+namespace DungeonDeskBackend.Application.Services;
 
 public class DeskService : IDeskService
 {

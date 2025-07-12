@@ -65,7 +65,7 @@ public class PlayerService : IPlayerService
         {
             throw new KeyNotFoundException("Player not found");
         }
-        return player.PlayerDesks.Select(x=>x.Desk).ToList();
+        return player.PlayerDesks.Select(x => x.Desk).ToList();
     }
 
     public Task<Desk> JoinDeskAsync(Guid playerId, Guid deskId)
@@ -82,7 +82,7 @@ public class PlayerService : IPlayerService
             throw new KeyNotFoundException("Desk not found");
         }
 
-        if(desk.PlayerDesks.Count >= desk.MaxPlayers)
+        if (desk.PlayerDesks.Count >= desk.MaxPlayers)
         {
             throw new InvalidOperationException("Desk is full");
         }

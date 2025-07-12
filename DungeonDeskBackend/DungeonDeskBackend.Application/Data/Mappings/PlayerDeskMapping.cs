@@ -2,7 +2,7 @@ using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DungeonDeskBackend.Application.Data.Mappings; 
+namespace DungeonDeskBackend.Application.Data.Mappings;
 
 public class PlayerDeskMapping : IEntityTypeConfiguration<PlayerDesk>
 {

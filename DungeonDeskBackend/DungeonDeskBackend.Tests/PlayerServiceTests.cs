@@ -1,6 +1,7 @@
 ﻿using DungeonDeskBackend.Application.Data;
 using DungeonDeskBackend.Application.Services;
 using DungeonDeskBackend.Application.Services.Interfaces;
+using DungeonDeskBackend.Domain.Enums;
 using DungeonDeskBackend.Domain.Models;
 using DungeonDeskBackend.Tests.Fixtures.Fakers;
 using Microsoft.EntityFrameworkCore;
@@ -94,9 +95,9 @@ public class PlayerServiceTests : IDisposable
         // Arrange
         var player = PlayerFaker.MakeOne();
         var desk1 = DeskFaker.MakeOne();
-        desk1.PlayerDesks.Add(new PlayerDesk { PlayerId = player.Id, DeskId = desk1.Id, Role = "Player", JoinedAt = DateTime.UtcNow });
+        desk1.PlayerDesks.Add(new PlayerDesk { PlayerId = player.Id, DeskId = desk1.Id, Role = EPlayerDeskRole.Player, JoinedAt = DateTime.UtcNow });
         var desk2 = DeskFaker.MakeOne();
-        desk2.PlayerDesks.Add(new PlayerDesk { PlayerId = player.Id, DeskId = desk2.Id, Role = "Player", JoinedAt = DateTime.UtcNow });
+        desk2.PlayerDesks.Add(new PlayerDesk { PlayerId = player.Id, DeskId = desk2.Id, Role = EPlayerDeskRole.Player, JoinedAt = DateTime.UtcNow });
         await _playerService.CreatePlayerAsync(player);
         await _dbContext.Desks.AddRangeAsync(desk1, desk2);
         await _dbContext.SaveChangesAsync();
@@ -165,7 +166,7 @@ public class PlayerServiceTests : IDisposable
         // Arrange
         var player = PlayerFaker.MakeOne();
         var desk = DeskFaker.MakeOne();
-        desk.PlayerDesks.Add(new PlayerDesk { PlayerId = player.Id, DeskId = desk.Id, Role = "Player", JoinedAt = DateTime.UtcNow });
+        desk.PlayerDesks.Add(new PlayerDesk { PlayerId = player.Id, DeskId = desk.Id, Role = EPlayerDeskRole.Player, JoinedAt = DateTime.UtcNow });
         await _playerService.CreatePlayerAsync(player);
         await _dbContext.Desks.AddAsync(desk);
         await _dbContext.SaveChangesAsync();

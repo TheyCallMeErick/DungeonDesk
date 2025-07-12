@@ -14,7 +14,7 @@ public class AdventureService : IAdventureService
         _context = context;
     }
 
-    public async Task<IEnumerable<Adventure>> GetAllAdventuresAsync()
+    public async Task<IEnumerable<Adventure>> GetAdventuresAsync()
     {
         return await _context.Adventures.ToListAsync();
     }

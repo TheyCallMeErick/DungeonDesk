@@ -10,6 +10,6 @@ public class Desk : BaseModel
     public ETableStatus Status { get; set; }
     public int MaxPlayers { get; set; }
     public ICollection<Session> Sessions { get; set; } = new List<Session>();
-    public Adventure Adventure { get; set; } = new Adventure();
+    public Adventure? Adventure { get; set; }
     public Guid? AdventureId { get; set; }
 }

@@ -5,7 +5,7 @@ public class Session : BaseModel
     public DateTime ScheduledAt { get; set; }
 
     public Guid DeskId { get; set; }
-    public Desk Desk { get; set; } = new Desk();
+    public Desk? Desk { get; set; }
 
     public DateTime? StartedAt { get; set; }
     public DateTime? EndedAt { get; set; }

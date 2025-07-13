@@ -6,8 +6,8 @@ public class Chronicle : BaseModel
     public string Content { get; set; } = string.Empty;
 
     public Guid SessionId { get; set; }
-    public Session Session { get; set; } = new Session();
+    public Session? Session { get; set; } 
 
     public Guid AuthorId { get; set; }
-    public Player Author { get; set; } = new Player();
+    public Player? Author { get; set; }
 }

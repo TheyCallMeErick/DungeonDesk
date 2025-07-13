@@ -49,7 +49,7 @@ public class PlayerService : IPlayerService
 
     public async Task DeletePlayerAsync(Guid id)
     {
-        var player = await _context.Players.FindAsync(id);
+        var player = await _context.Players.FirstOrDefaultAsync(x => x.Id == id);
         if (player == null)
         {
             throw new KeyNotFoundException("Player not found");
@@ -61,12 +61,18 @@ public class PlayerService : IPlayerService
 
     public async Task<List<Desk>> GetDesksByPlayerIdAsync(Guid playerId)
     {
-        var player = await _context.Players.Include(p => p.PlayerDesks).FirstOrDefaultAsync(p => p.Id == playerId);
-        if (player == null)
+        var desks = await _context.Desks
+            .Include(p => p.PlayerDesks)
+                .Where(p => p.PlayerDesks.Any(
+                        pd => pd.PlayerId == playerId
+                        )
+                    )
+            .ToListAsync();
+        if (!desks.Any())
         {
-            throw new KeyNotFoundException("Player not found");
+             throw new KeyNotFoundException("No desks found for the player.");
         }
-        return player.PlayerDesks.Select(x => x.Desk).ToList();
+        return desks;
     }
 
     public Task<Desk> JoinDeskAsync(Guid playerId, Guid deskId)

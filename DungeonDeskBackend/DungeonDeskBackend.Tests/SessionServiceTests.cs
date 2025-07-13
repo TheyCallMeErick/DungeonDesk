@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DungeonDeskBackend.Tests;
 
-public class SessionServiceTests
+public class SessionServiceTests : IDisposable
 {
     private readonly DungeonDeskDbContext _dbContext;
     private readonly ISessionService _sessionService;
@@ -201,5 +201,12 @@ public class SessionServiceTests
         // Assert
         Assert.False(result.Success);
         Assert.Single(_dbContext.Sessions);
+    }
+
+
+    public void Dispose()
+    {
+        _dbContext.Database.EnsureDeleted();
+        _dbContext.Dispose();
     }
 }

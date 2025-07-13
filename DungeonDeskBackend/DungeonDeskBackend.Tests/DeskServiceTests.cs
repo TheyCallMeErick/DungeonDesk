@@ -16,7 +16,7 @@ public class DeskServiceTests : IDisposable
     public DeskServiceTests()
     {
         var options = new DbContextOptionsBuilder<DungeonDeskDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDb")
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
         _dbContext = new DungeonDeskDbContext(options);
@@ -80,8 +80,8 @@ public class DeskServiceTests : IDisposable
     {
         // Arrange
         var desk = DeskFaker.MakeOne();
-        _dbContext.Desks.Add(desk);
-        _dbContext.SaveChanges();
+        await _dbContext.Desks.AddAsync(desk);
+        await _dbContext.SaveChangesAsync();
         desk.Name = "Updated Desk Name";
 
         // Act

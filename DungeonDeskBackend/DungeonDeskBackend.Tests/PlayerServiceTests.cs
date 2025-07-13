@@ -16,7 +16,7 @@ public class PlayerServiceTests : IDisposable
     public PlayerServiceTests()
     {
         var options = new DbContextOptionsBuilder<DungeonDeskDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDb")
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
         _dbContext = new DungeonDeskDbContext(options);
@@ -55,6 +55,7 @@ public class PlayerServiceTests : IDisposable
         Assert.NotNull(createdPlayer);
         Assert.Equal(player.Name, createdPlayer.Name);
         var players = await _playerService.GetPlayersAsync();
+        Assert.Single(players);
         Assert.Contains(players, p => p.Name == player.Name);
     }
 
@@ -94,14 +95,31 @@ public class PlayerServiceTests : IDisposable
     {
         // Arrange
         var player = PlayerFaker.MakeOne();
-        var desk1 = DeskFaker.MakeOne();
-        desk1.PlayerDesks.Add(new PlayerDesk { PlayerId = player.Id, DeskId = desk1.Id, Role = EPlayerDeskRole.Player, JoinedAt = DateTime.UtcNow });
-        var desk2 = DeskFaker.MakeOne();
-        desk2.PlayerDesks.Add(new PlayerDesk { PlayerId = player.Id, DeskId = desk2.Id, Role = EPlayerDeskRole.Player, JoinedAt = DateTime.UtcNow });
-        await _playerService.CreatePlayerAsync(player);
-        await _dbContext.Desks.AddRangeAsync(desk1, desk2);
+        await _dbContext.Players.AddAsync(player);
         await _dbContext.SaveChangesAsync();
 
+        var desk1 = DeskFaker.MakeOne();
+        desk1.PlayerDesks.Add(
+            new PlayerDesk
+            {
+                PlayerId = player.Id,
+                DeskId = desk1.Id,
+                Role = EPlayerDeskRole.Player,
+                JoinedAt = DateTime.UtcNow
+            }
+        );
+        var desk2 = DeskFaker.MakeOne();
+        desk2.PlayerDesks.Add(
+            new PlayerDesk
+            {
+                PlayerId = player.Id,
+                DeskId = desk2.Id,
+                Role = EPlayerDeskRole.Player,
+                JoinedAt = DateTime.UtcNow
+            }
+        );
+        await _dbContext.Desks.AddRangeAsync(desk1, desk2);
+        await _dbContext.SaveChangesAsync();
         // Act
         var desks = await _playerService.GetDesksByPlayerIdAsync(player.Id);
 

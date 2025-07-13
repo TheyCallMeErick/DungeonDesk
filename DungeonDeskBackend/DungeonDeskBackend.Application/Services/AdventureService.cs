@@ -77,7 +77,7 @@ public class AdventureService : IAdventureService
 
     public Task DeleteAdventureAsync(Guid adventureId)
     {
-        var adventure = _context.Adventures.Find(adventureId);
+        var adventure = _context.Adventures.FirstOrDefault(x=>x.Id==adventureId);
         if (adventure == null)
         {
             throw new KeyNotFoundException($"Adventure with ID {adventureId} not found");

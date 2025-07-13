@@ -1,6 +1,7 @@
 using DungeonDeskBackend.Application.Data;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DungeonDeskBackend.Application.Services;
 
@@ -55,9 +56,9 @@ public class DeskService : IDeskService
         return Task.FromResult(players);
     }
 
-    public Task<Desk> UpdateDeskAsync(Guid id, Desk desk)
+    public async Task<Desk> UpdateDeskAsync(Guid id, Desk desk)
     {
-        var existingDesk = _context.Desks.Find(id);
+        var existingDesk = await _context.Desks.FirstOrDefaultAsync(x => x.Id == id);
         if (existingDesk == null)
         {
             throw new KeyNotFoundException("Desk not found");
@@ -68,7 +69,7 @@ public class DeskService : IDeskService
         existingDesk.UpdatedAt = DateTime.UtcNow;
 
         _context.Desks.Update(existingDesk);
-        _context.SaveChanges();
-        return Task.FromResult(existingDesk);
+        await _context.SaveChangesAsync();
+        return existingDesk;
     }
 }

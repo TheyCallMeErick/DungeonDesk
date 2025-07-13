@@ -134,7 +134,7 @@ public class ChronicleService : IChronicleService
             .FirstOrDefaultAsync(c => c.Id == chronicleId);
     }
 
-    public async Task<IEnumerable<Chronicle>> GetChroniclesBySessionAsync(Guid sessionId)
+    public async Task<IEnumerable<Chronicle>> GetChroniclesBySessionIdAsync(Guid sessionId)
     {
         return await context.Chronicles
             .Where(c => c.SessionId == sessionId)

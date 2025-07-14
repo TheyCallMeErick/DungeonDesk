@@ -1,4 +1,7 @@
 using DungeonDeskBackend.Application.Data;
+using DungeonDeskBackend.Application.DTOs.Inputs;
+using DungeonDeskBackend.Application.DTOs.Inputs.Adventure;
+using DungeonDeskBackend.Application.Repositories;
 using DungeonDeskBackend.Application.Services;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Tests.Fixtures.Fakers;
@@ -18,7 +21,8 @@ public class AdventureServiceTests  : IDisposable
             .Options;
 
         _dbContext = new DungeonDeskDbContext(options);
-        _adventureService = new AdventureService(_dbContext);
+
+        _adventureService = new AdventureService(_dbContext, new AdventureRepository(_dbContext));
     }
 
     [Fact]
@@ -31,7 +35,7 @@ public class AdventureServiceTests  : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _adventureService.GetAdventuresAsync();
+        var result = await _adventureService.GetAdventuresAsync(new QueryInputDTO<GetAdventuresQueryDTO>());
 
         // Assert
         Assert.NotNull(result.Data);

@@ -1,5 +1,8 @@
 using DungeonDeskBackend.Application.Data;
+using DungeonDeskBackend.Application.DTOs.Inputs;
+using DungeonDeskBackend.Application.DTOs.Inputs.Adventure;
 using DungeonDeskBackend.Application.DTOs.Outputs;
+using DungeonDeskBackend.Application.Repositories.Interfaces;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -9,15 +12,17 @@ namespace DungeonDeskBackend.Application.Services;
 public class AdventureService : IAdventureService
 {
     private readonly DungeonDeskDbContext _context;
+    private readonly IAdventureRepository _adventureRepository;
 
-    public AdventureService(DungeonDeskDbContext context)
+    public AdventureService(DungeonDeskDbContext context, IAdventureRepository adventureRepository)
     {
         _context = context;
+        _adventureRepository = adventureRepository;
     }
 
-    public async Task<OperationResultDTO<IEnumerable<Adventure>>> GetAdventuresAsync()
+    public async Task<OperationResultDTO<IEnumerable<Adventure>>> GetAdventuresAsync(QueryInputDTO<GetAdventuresQueryDTO> queryInput)
     {
-        var data = await _context.Adventures.ToListAsync();
+        var data = await  _adventureRepository.GetAdventuresAsync(queryInput);
         if (data == null || !data.Any())
         {
             return OperationResultDTO<IEnumerable<Adventure>>
@@ -27,7 +32,7 @@ public class AdventureService : IAdventureService
             .SuccessResult()
             .WithData(data)
             .WithMessage("Adventures retrieved successfully.")
-            .WithPagination(PaginationOutputDTO.Create(data.Count, 1, 10));
+            .WithPagination(PaginationOutputDTO.Create(data.ToList().Count, 1, 10));
     }
     public async Task<OperationResultDTO<Adventure>> GetAdventureByIdAsync(Guid adventureId)
     {

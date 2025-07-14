@@ -34,12 +34,14 @@ public class PlayerServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var players = await _playerService.GetPlayersAsync();
+        var result = await _playerService.GetPlayersAsync();
 
         // Assert
-        Assert.Equal(2, players.Count);
-        Assert.Contains(players, p => p.Name == player1.Name);
-        Assert.Contains(players, p => p.Name == player2.Name);
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Equal(2, result.Data.Count());
+        Assert.Contains(_dbContext.Players, p => p.Name == player1.Name);
+        Assert.Contains(_dbContext.Players, p => p.Name == player2.Name);
     }
 
     [Fact]
@@ -49,14 +51,14 @@ public class PlayerServiceTests : IDisposable
         var player = PlayerFaker.MakeOne();
 
         // Act
-        var createdPlayer = await _playerService.CreatePlayerAsync(player);
+        var result = await _playerService.CreatePlayerAsync(player);
 
         // Assert
-        Assert.NotNull(createdPlayer);
-        Assert.Equal(player.Name, createdPlayer.Name);
-        var players = await _playerService.GetPlayersAsync();
-        Assert.Single(players);
-        Assert.Contains(players, p => p.Name == player.Name);
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Equal(player.Name, result.Data.Name);
+        Assert.Single(_dbContext.Players);
+        Assert.Contains(_dbContext.Players, p => p.Name == player.Name);
     }
 
     [Fact]
@@ -68,11 +70,12 @@ public class PlayerServiceTests : IDisposable
         player.Name = "Updated Name";
 
         // Act
-        var updatedPlayer = await _playerService.UpdatePlayerAsync(player.Id, player);
+        var result = await _playerService.UpdatePlayerAsync(player.Id, player);
 
         // Assert
-        Assert.NotNull(updatedPlayer);
-        Assert.Equal("Updated Name", updatedPlayer.Name);
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Equal("Updated Name", result.Data.Name);
     }
 
     [Fact]
@@ -83,11 +86,14 @@ public class PlayerServiceTests : IDisposable
         await _playerService.CreatePlayerAsync(player);
 
         // Act
-        await _playerService.DeletePlayerAsync(player.Id);
+        var result = await _playerService.DeletePlayerAsync(player.Id);
 
         // Assert
-        var players = await _playerService.GetPlayersAsync();
-        Assert.DoesNotContain(players, p => p.Name == "Player to Delete");
+        Assert.True(result.Success);
+        Assert.Null(result.Data);
+        Assert.Empty(_dbContext.Players);
+        Assert.DoesNotContain(_dbContext.Players, p => p.Name == player.Name);
+        Assert.DoesNotContain(_dbContext.Players, p => p.Name == "Player to Delete");
     }
 
     [Fact]
@@ -121,12 +127,14 @@ public class PlayerServiceTests : IDisposable
         await _dbContext.Desks.AddRangeAsync(desk1, desk2);
         await _dbContext.SaveChangesAsync();
         // Act
-        var desks = await _playerService.GetDesksByPlayerIdAsync(player.Id);
+        var result = await _playerService.GetDesksByPlayerIdAsync(player.Id);
 
         // Assert
-        Assert.Equal(2, desks.Count);
-        Assert.Contains(desks, d => d.Name == desk1.Name);
-        Assert.Contains(desks, d => d.Name == desk2.Name);
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Equal(2, result.Data.Count());
+        Assert.Contains(_dbContext.Desks, d => d.Name == desk1.Name);
+        Assert.Contains(_dbContext.Desks, d => d.Name == desk2.Name);
     }
 
     [Fact]
@@ -140,16 +148,17 @@ public class PlayerServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var joinedDesk = await _playerService.JoinDeskAsync(player.Id, desk.Id);
+        var result = await _playerService.JoinDeskAsync(player.Id, desk.Id);
 
         // Assert
-        Assert.NotNull(joinedDesk);
-        Assert.Equal(desk.Id, joinedDesk.Id);
-        Assert.Contains(joinedDesk.PlayerDesks.Select(x => x.PlayerId), p => p == player.Id);
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Equal(desk.Id, result.Data.Id);
+        Assert.Contains(_dbContext.PlayerDesks.Select(x => x.PlayerId), p => p == player.Id);
     }
 
     [Fact]
-    public async Task JoinDeskAsync_ShouldThrowExceptionIfDeskIsFull()
+    public async Task JoinDeskAsync_ShouldReturnErrorExceptionIfDeskIsFull()
     {
         // Arrange
         var player1 = PlayerFaker.MakeOne();
@@ -163,23 +172,33 @@ public class PlayerServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
         await _playerService.JoinDeskAsync(player1.Id, desk.Id);
 
-        // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _playerService.JoinDeskAsync(player2.Id, desk.Id));
+        // Act
+        var result = await _playerService.JoinDeskAsync(player2.Id, desk.Id);
+
+        //Assert
+        Assert.False(result.Success);
+        Assert.Equal($"Desk with ID {desk.Id} is full.", result.Message);
+        Assert.Null(result.Data);
+        Assert.DoesNotContain(_dbContext.PlayerDesks, pd => pd.PlayerId == player2.Id && pd.DeskId == desk.Id);
     }
 
     [Fact]
-    public async Task JoinDeskAsync_ShouldThrowExceptionIfPlayerOrDeskNotFound()
+    public async Task JoinDeskAsync_ShouldReturnErrorIfPlayerOrDeskNotFound()
     {
         // Arrange
         var playerId = Guid.NewGuid();
         var deskId = Guid.NewGuid();
 
-        // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => _playerService.JoinDeskAsync(playerId, deskId));
+        // Act 
+        var result = await _playerService.JoinDeskAsync(playerId, deskId);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal($"Player with ID {playerId} not found.", result.Message);
     }
 
     [Fact]
-    public async Task JoinDeskAsync_ShouldThrowExceptionIfPlayerAlreadyInDesk()
+    public async Task JoinDeskAsync_ShouldReturnErrorIfPlayerAlreadyInDesk()
     {
         // Arrange
         var player = PlayerFaker.MakeOne();
@@ -189,24 +208,33 @@ public class PlayerServiceTests : IDisposable
         await _dbContext.Desks.AddAsync(desk);
         await _dbContext.SaveChangesAsync();
 
-        // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _playerService.JoinDeskAsync(player.Id, desk.Id));
+        // Act
+        var result = await _playerService.JoinDeskAsync(player.Id, desk.Id);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal($"Player with ID {player.Id} is already in desk with ID {desk.Id}.", result.Message);
     }
 
     [Fact]
-    public async Task JoinDeskAsync_ShouldThrowExceptionIfDeskNotFound()
+    public async Task JoinDeskAsync_ShouldReturnErrorIfDeskNotFound()
     {
         // Arrange
         var player = PlayerFaker.MakeOne();
         await _playerService.CreatePlayerAsync(player);
         var nonexistentDeskId = Guid.NewGuid();
 
-        // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => _playerService.JoinDeskAsync(player.Id, nonexistentDeskId));
+        // Act
+        var result = await _playerService.JoinDeskAsync(player.Id, nonexistentDeskId);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal($"Desk with ID {nonexistentDeskId} not found.", result.Message);
+        Assert.Null(result.Data);
     }
 
     [Fact]
-    public async Task JoinDeskAsync_ShouldThrowExceptionIfPlayerNotFound()
+    public async Task JoinDeskAsync_ShouldReturnErrorIfPlayerNotFound()
     {
         // Arrange
         var desk = DeskFaker.MakeOne();
@@ -214,8 +242,13 @@ public class PlayerServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
         var nonexistentPlayerId = Guid.NewGuid();
 
-        // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => _playerService.JoinDeskAsync(nonexistentPlayerId, desk.Id));
+        // Act
+        var result = await _playerService.JoinDeskAsync(nonexistentPlayerId, desk.Id);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal($"Player with ID {nonexistentPlayerId} not found.", result.Message);
+        Assert.Null(result.Data);
     }
 
     public void Dispose()

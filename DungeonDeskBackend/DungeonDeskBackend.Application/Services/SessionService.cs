@@ -18,7 +18,7 @@ public class SessionService : ISessionService
         _context = context;
     }
 
-    public async Task<OperationResultDTO> CreateSessionAsync(Guid deskId, DateTime ScheduledAt, string Notes, Guid playerId)
+    public async Task<OperationResultDTO<Session>> CreateSessionAsync(Guid deskId, DateTime ScheduledAt, string Notes, Guid playerId)
     {
         var desk = await _context.Desks.Include(x => x.PlayerDesks).FirstOrDefaultAsync(x => x.Id == deskId);
         if (desk == null)
@@ -37,7 +37,7 @@ public class SessionService : ISessionService
 
         if (!validationResult.IsValid)
         {
-            return OperationResultDTO.FailureResult(validationResult.Message);
+            return OperationResultDTO<Session>.FailureResult(validationResult.Message);
         }
         var session = new Session
         {
@@ -49,10 +49,12 @@ public class SessionService : ISessionService
         };
         _context.Sessions.Add(session);
         await _context.SaveChangesAsync();
-        return OperationResultDTO.SuccessResult("Session created successfully");
+        return OperationResultDTO<Session>.SuccessResult().
+            WithData(session).
+            WithMessage("Session created successfully.");
     }
 
-    public async Task<OperationResultDTO> DeleteSessionAsync(Guid sessionId, Guid playerId)
+    public async Task<OperationResultDTO<Session>> DeleteSessionAsync(Guid sessionId, Guid playerId)
     {
         var desk = await _context.Desks.Include(x => x.PlayerDesks).FirstOrDefaultAsync(x => x.Sessions.Any(x=>x.Id==sessionId));
         if (desk == null)
@@ -71,7 +73,7 @@ public class SessionService : ISessionService
 
         if (!validationResult.IsValid)
         {
-            return OperationResultDTO.FailureResult(validationResult.Message);
+            return OperationResultDTO<Session>.FailureResult(validationResult.Message);
         }
         var session = await _context.Sessions.FindAsync(sessionId);
         if (session == null)
@@ -80,14 +82,24 @@ public class SessionService : ISessionService
         }
         _context.Sessions.Remove(session);
         await _context.SaveChangesAsync();
-        return OperationResultDTO.SuccessResult("Session deleted successfully");
+        return OperationResultDTO<Session>.SuccessResult().
+            WithData(session).
+            WithMessage("Session deleted successfully.");
     }
 
-    public async Task<IEnumerable<Session>> GetSessionsByDeskIdAsync(Guid deskId)
+    public async Task<OperationResultDTO<IEnumerable<Session>>> GetSessionsByDeskIdAsync(Guid deskId)
     {
-        return await _context.Sessions
+        var sessions = await _context.Sessions
             .Where(x => x.DeskId == deskId)
             .Include(x => x.Chronicles)
             .ToListAsync();
+        if (sessions == null || !sessions.Any())
+        {
+            return OperationResultDTO<IEnumerable<Session>>.FailureResult($"No sessions found for desk with ID {deskId}.");
+        }
+        return OperationResultDTO<IEnumerable<Session>>.SuccessResult()
+            .WithData(sessions)
+            .WithMessage("Sessions retrieved successfully.")
+            .WithPagination(PaginationOutputDTO.Create(sessions.Count, 1, 10));
     }
 }

@@ -18,7 +18,7 @@ public class ChronicleService : IChronicleService
         this.context = context;
     }
 
-    public async Task<OperationResultDTO> AddChronicleAsync(Guid sessionId, string title, string content, Guid authorId)
+    public async Task<OperationResultDTO<Chronicle>> AddChronicleAsync(Guid sessionId, string title, string content, Guid authorId)
     {
         var session = await context
             .Sessions
@@ -28,11 +28,11 @@ public class ChronicleService : IChronicleService
 
         if (session == null)
         {
-            return OperationResultDTO.FailureResult($"Session with ID {sessionId} not found.");
+            return OperationResultDTO<Chronicle>.FailureResult($"Session with ID {sessionId} not found.");
         }
         if (session.Desk == null)
         {
-            return OperationResultDTO.FailureResult($"Session with ID {sessionId} does not have a desk associated.");
+            return OperationResultDTO<Chronicle>.FailureResult($"Session with ID {sessionId} does not have a desk associated.");
         }
 
         var validationResult = Validator.Validate(
@@ -46,7 +46,7 @@ public class ChronicleService : IChronicleService
 
         if (!validationResult.IsValid)
         {
-            return OperationResultDTO.FailureResult(validationResult.Message);
+            return OperationResultDTO<Chronicle>.FailureResult(validationResult.Message);
         }
 
         var chronicle = new Chronicle
@@ -59,10 +59,13 @@ public class ChronicleService : IChronicleService
 
         context.Chronicles.Add(chronicle);
         await context.SaveChangesAsync();
-        return OperationResultDTO.SuccessResult(chronicle);
+        return OperationResultDTO<Chronicle>.SuccessResult()
+            .WithData(chronicle)
+            .WithMessage("Chronicle added successfully.")
+            .WithPagination(PaginationOutputDTO.Create(1, 1, 10));
     }
 
-    public async Task<OperationResultDTO> UpdateChronicleAsync(Guid chronicleId, string title, string content, Guid authorId)
+    public async Task<OperationResultDTO<Chronicle>> UpdateChronicleAsync(Guid chronicleId, string title, string content, Guid authorId)
     {
         var chronicle = await context
             .Chronicles
@@ -73,7 +76,7 @@ public class ChronicleService : IChronicleService
 
         if (chronicle == null || chronicle.Session == null || chronicle.Session.Desk == null)
         {
-            return OperationResultDTO.FailureResult($"Chronicle with ID {chronicleId} not found or does not have an associated session or desk.");
+            return OperationResultDTO<Chronicle>.FailureResult($"Chronicle with ID {chronicleId} not found or does not have an associated session or desk.");
         }
 
         var validationResult = Validator.Validate(
@@ -87,16 +90,19 @@ public class ChronicleService : IChronicleService
 
         if (!validationResult.IsValid)
         {
-            return OperationResultDTO.FailureResult(validationResult.Message);
+            return OperationResultDTO<Chronicle>.FailureResult(validationResult.Message);
         }
         chronicle.Title = title;
         chronicle.Content = content;
         context.Chronicles.Update(chronicle);
         await context.SaveChangesAsync();
-        return OperationResultDTO.SuccessResult(chronicle);
+        return OperationResultDTO<Chronicle>.SuccessResult()
+            .WithData(chronicle)
+            .WithMessage("Chronicle updated successfully.")
+            .WithPagination(PaginationOutputDTO.Create(1, 1, 10));
     }
 
-    public async Task<OperationResultDTO> DeleteChronicleAsync(Guid chronicleId, Guid authorId)
+    public async Task<OperationResultDTO<Chronicle>> DeleteChronicleAsync(Guid chronicleId, Guid authorId)
     {
         var chronicle = await context.Chronicles
         .Include(c => c.Session)
@@ -106,7 +112,7 @@ public class ChronicleService : IChronicleService
 
         if (chronicle == null || chronicle.Session?.Desk == null)
         {
-            return OperationResultDTO.FailureResult($"Chronicle with ID {chronicleId} not found or does not have an associated session or desk.");
+            return OperationResultDTO<Chronicle>.FailureResult($"Chronicle with ID {chronicleId} not found or does not have an associated session or desk.");
         }
 
         var validationResult = Validator.Validate(
@@ -120,24 +126,42 @@ public class ChronicleService : IChronicleService
 
         if (!validationResult.IsValid)
         {
-            return OperationResultDTO.FailureResult(validationResult.Message);
+            return OperationResultDTO<Chronicle>.FailureResult(validationResult.Message);
         }
 
         context.Chronicles.Remove(chronicle);
         await context.SaveChangesAsync();
-        return OperationResultDTO.SuccessResult(chronicle);
+        return OperationResultDTO<Chronicle>.SuccessResult()
+            .WithMessage("Chronicle deleted successfully.");
     }
 
-    public async Task<Chronicle?> GetChronicleByIdAsync(Guid chronicleId)
+    public async Task<OperationResultDTO<Chronicle?>> GetChronicleByIdAsync(Guid chronicleId)
     {
-        return await context.Chronicles
+        var chronicle = await context.Chronicles
             .FirstOrDefaultAsync(c => c.Id == chronicleId);
+
+        if (chronicle == null)
+        {
+            return OperationResultDTO<Chronicle?>.FailureResult($"Chronicle with ID {chronicleId} not found.");
+        }
+
+        return OperationResultDTO<Chronicle?>.SuccessResult()
+            .WithData(chronicle)
+            .WithMessage("Chronicle retrieved successfully.");
     }
 
-    public async Task<IEnumerable<Chronicle>> GetChroniclesBySessionIdAsync(Guid sessionId)
+    public async Task<OperationResultDTO<IEnumerable<Chronicle>>> GetChroniclesBySessionIdAsync(Guid sessionId)
     {
-        return await context.Chronicles
+        var chronicles = await context.Chronicles
             .Where(c => c.SessionId == sessionId)
             .ToListAsync();
+        if (chronicles == null || !chronicles.Any())
+        {
+            return OperationResultDTO<IEnumerable<Chronicle>>.FailureResult($"No chronicles found for session with ID {sessionId}.");
+        }
+        return OperationResultDTO<IEnumerable<Chronicle>>.SuccessResult()
+            .WithData(chronicles)
+            .WithMessage("Chronicles retrieved successfully.")
+            .WithPagination(PaginationOutputDTO.Create(chronicles.Count, 1, 10));
     }
 }

@@ -1,4 +1,5 @@
 using DungeonDeskBackend.Application.Data;
+using DungeonDeskBackend.Application.DTOs.Outputs;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -14,54 +15,87 @@ public class DeskService : IDeskService
         _context = context;
     }
 
-    public Task<Desk> CreateDeskAsync(Desk desk)
+    public async Task<OperationResultDTO<Desk>> CreateDeskAsync(Desk desk)
     {
-        _context.Desks.Add(desk);
-        _context.SaveChanges();
-        return Task.FromResult(desk);
+        await _context.Desks.AddAsync(desk);
+        await _context.SaveChangesAsync();
+        return OperationResultDTO<Desk>
+            .SuccessResult()
+            .WithData(desk)
+            .WithMessage("Desk created successfully.");
     }
 
-    public Task DeleteDeskAsync(Guid id)
+    public async Task<OperationResultDTO<Desk>> DeleteDeskAsync(Guid id)
     {
         var desk = _context.Desks.Find(id);
         if (desk == null)
         {
-            throw new KeyNotFoundException("Desk not found");
+            return OperationResultDTO<Desk>
+                .FailureResult($"Desk with ID {id} not found.");
         }
 
         _context.Desks.Remove(desk);
-        _context.SaveChanges();
-        return Task.CompletedTask;
+        await  _context.SaveChangesAsync();
+        return OperationResultDTO<Desk>
+            .SuccessResult()
+            .WithMessage("Desk deleted successfully.");
     }
 
-    public Task<Desk> GetDeskByIdAsync(Guid id)
+    public async Task<OperationResultDTO<Desk>> GetDeskByIdAsync(Guid id)
     {
-        var desk = _context.Desks.Find(id);
+        var desk = await _context.Desks.FirstOrDefaultAsync(x=> x.Id == id);
         if (desk == null)
         {
-            throw new KeyNotFoundException("Desk not found");
+            return OperationResultDTO<Desk>
+                .FailureResult($"Desk with ID {id} not found.");
         }
 
-        return Task.FromResult(desk);
+        return OperationResultDTO<Desk>
+            .SuccessResult()
+            .WithData(desk)
+            .WithMessage("Desk retrieved successfully.");
     }
 
-    public Task<List<Desk>> GetDesksAsync()
+    public Task<OperationResultDTO<IEnumerable<Desk>>> GetDesksAsync()
     {
-        return Task.FromResult(_context.Desks.ToList());
+        var data = _context.Desks.ToList();
+        if (data == null || !data.Any())
+        {
+            return Task.FromResult(OperationResultDTO<IEnumerable<Desk>>
+                .FailureResult("No desks found."));
+        }
+        return Task.FromResult(OperationResultDTO<IEnumerable<Desk>>
+            .SuccessResult()
+            .WithData(data)
+            .WithMessage("Desks retrieved successfully.")
+            .WithPagination(PaginationOutputDTO.Create(data.Count, 1, 10)));
     }
 
-    public Task<List<Player>> GetPlayersByDeskIdAsync(Guid deskId)
+    public async Task<OperationResultDTO<IEnumerable<Player>>> GetPlayersByDeskIdAsync(Guid deskId)
     {
-        var players = _context.Players.Where(p => p.PlayerDesks.Any(d => d.DeskId == deskId)).ToList();
-        return Task.FromResult(players);
+        var players = await _context
+            .Players
+            .Where(p => p.PlayerDesks.Any(d => d.DeskId == deskId))
+            .ToListAsync();
+        if (players == null || !players.Any())
+        {
+            return OperationResultDTO<IEnumerable<Player>>
+                .FailureResult($"No players found for desk with ID {deskId}.");
+        }
+        return OperationResultDTO<IEnumerable<Player>>
+            .SuccessResult()
+            .WithData(players)
+            .WithMessage("Players retrieved successfully.")
+            .WithPagination(PaginationOutputDTO.Create(players.Count, 1, 10));
     }
 
-    public async Task<Desk> UpdateDeskAsync(Guid id, Desk desk)
+    public async Task<OperationResultDTO<Desk>> UpdateDeskAsync(Guid id, Desk desk)
     {
         var existingDesk = await _context.Desks.FirstOrDefaultAsync(x => x.Id == id);
         if (existingDesk == null)
         {
-            throw new KeyNotFoundException("Desk not found");
+            return OperationResultDTO<Desk>
+                .FailureResult($"Desk with ID {id} not found.");
         }
 
         existingDesk.Name = desk.Name;
@@ -70,6 +104,9 @@ public class DeskService : IDeskService
 
         _context.Desks.Update(existingDesk);
         await _context.SaveChangesAsync();
-        return existingDesk;
+        return OperationResultDTO<Desk>
+            .SuccessResult()
+            .WithData(existingDesk)
+            .WithMessage("Desk updated successfully.");
     }
 }

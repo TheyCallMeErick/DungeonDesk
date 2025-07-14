@@ -30,14 +30,14 @@ public class DeskServiceTests : IDisposable
         var desk = DeskFaker.MakeOne();
 
         // Act
-        var createdDesk = await _deskService.CreateDeskAsync(desk);
+        var result = await _deskService.CreateDeskAsync(desk);
 
         // Assert
-        Assert.NotNull(createdDesk);
-        Assert.Equal(desk.Name, createdDesk.Name);
-        Assert.Equal(desk.Description, createdDesk.Description);
-        var desks = await _deskService.GetDesksAsync();
-        Assert.Contains(desks, d => d.Name == desk.Name);
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Equal(desk.Name, result.Data.Name);
+        Assert.Equal(desk.Description, result.Data.Description);
+        Assert.Contains(_dbContext.Desks, d => d.Name == desk.Name);
     }
 
     [Fact]
@@ -51,12 +51,13 @@ public class DeskServiceTests : IDisposable
         _dbContext.SaveChanges();
 
         // Act
-        var desks = await _deskService.GetDesksAsync();
+        var result = await _deskService.GetDesksAsync();
 
         // Assert
-        Assert.Equal(2, desks.Count);
-        Assert.Contains(desks, d => d.Name == desk1.Name);
-        Assert.Contains(desks, d => d.Name == desk2.Name);
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Contains(result.Data, d => d.Name == desk1.Name);
+        Assert.Contains(result.Data, d => d.Name == desk2.Name);
     }
 
     [Fact]
@@ -68,11 +69,12 @@ public class DeskServiceTests : IDisposable
         _dbContext.SaveChanges();
 
         // Act
-        var retrievedDesk = await _deskService.GetDeskByIdAsync(desk.Id);
+        var result = await _deskService.GetDeskByIdAsync(desk.Id);
 
         // Assert
-        Assert.NotNull(retrievedDesk);
-        Assert.Equal(desk.Name, retrievedDesk.Name);
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Equal(desk.Name, result.Data.Name);
     }
 
     [Fact]
@@ -85,11 +87,12 @@ public class DeskServiceTests : IDisposable
         desk.Name = "Updated Desk Name";
 
         // Act
-        var updatedDesk = await _deskService.UpdateDeskAsync(desk.Id, desk);
+        var result = await _deskService.UpdateDeskAsync(desk.Id, desk);
 
         // Assert
-        Assert.NotNull(updatedDesk);
-        Assert.Equal("Updated Desk Name", updatedDesk.Name);
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Equal("Updated Desk Name", result.Data.Name);
     }
 
     [Fact]
@@ -101,11 +104,12 @@ public class DeskServiceTests : IDisposable
         _dbContext.SaveChanges();
 
         // Act
-        await _deskService.DeleteDeskAsync(desk.Id);
+        var result = await _deskService.DeleteDeskAsync(desk.Id);
 
         // Assert
-        var desks = await _deskService.GetDesksAsync();
-        Assert.DoesNotContain(desks, d => d.Name == desk.Name);
+        Assert.True(result.Success);
+        Assert.Empty(_dbContext.Desks);
+        Assert.Null(result.Data);
     }
 
     public void Dispose()

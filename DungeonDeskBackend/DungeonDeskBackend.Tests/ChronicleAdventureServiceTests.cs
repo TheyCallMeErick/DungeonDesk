@@ -293,7 +293,8 @@ public class ChronicleServiceTests : IDisposable
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(chronicle.Title, result.Title);
+        Assert.NotNull(result.Data);
+        Assert.Equal(chronicle.Title, result.Data.Title);
     }
 
     [Fact]
@@ -306,7 +307,7 @@ public class ChronicleServiceTests : IDisposable
         var result = await _chronicleService.GetChronicleByIdAsync(nonExistentId);
 
         // Assert
-        Assert.Null(result);
+        Assert.Null(result.Data);
     }
 
     [Fact]
@@ -328,7 +329,10 @@ public class ChronicleServiceTests : IDisposable
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(2, result.Count());
+        Assert.NotNull(result.Data);
+        Assert.Equal(2, result.Data.Count());
+        Assert.Contains(result.Data, c => c.Id == chronicle1.Id);
+        Assert.Contains(result.Data, c => c.Id == chronicle2.Id);
     }
 
 

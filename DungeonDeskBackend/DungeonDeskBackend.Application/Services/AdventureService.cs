@@ -1,4 +1,5 @@
 using DungeonDeskBackend.Application.Data;
+using DungeonDeskBackend.Application.DTOs.Outputs;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -14,31 +15,49 @@ public class AdventureService : IAdventureService
         _context = context;
     }
 
-    public async Task<IEnumerable<Adventure>> GetAdventuresAsync()
+    public async Task<OperationResultDTO<IEnumerable<Adventure>>> GetAdventuresAsync()
     {
-        return await _context.Adventures.ToListAsync();
+        var data = await _context.Adventures.ToListAsync();
+        if (data == null || !data.Any())
+        {
+            return OperationResultDTO<IEnumerable<Adventure>>
+                .FailureResult("No adventures found.");
+        }
+        return OperationResultDTO<IEnumerable<Adventure>>
+            .SuccessResult()
+            .WithData(data)
+            .WithMessage("Adventures retrieved successfully.")
+            .WithPagination(PaginationOutputDTO.Create(data.Count, 1, 10));
     }
-    public async Task<Adventure> GetAdventureByIdAsync(Guid adventureId)
+    public async Task<OperationResultDTO<Adventure>> GetAdventureByIdAsync(Guid adventureId)
     {
         var adventure = await _context.Adventures.FindAsync(adventureId);
         if (adventure == null)
         {
-            throw new KeyNotFoundException($"Adventure with ID {adventureId} not found");
+            return OperationResultDTO<Adventure>
+                .FailureResult($"Adventure with ID {adventureId} not found.");
         }
-        return adventure;
+        return OperationResultDTO<Adventure>
+            .SuccessResult()
+            .WithData(adventure)
+            .WithMessage("Adventure retrieved successfully.");
     }
-    public Task<Adventure> CreateAdventureAsync(Adventure adventure)
+    public async Task<OperationResultDTO<Adventure>> CreateAdventureAsync(Adventure adventure)
     {
         if (adventure == null)
         {
-            throw new ArgumentNullException(nameof(adventure), "Adventure cannot be null");
+            return OperationResultDTO<Adventure>
+                .FailureResult("Adventure cannot be null");
         }
-        _context.Adventures.Add(adventure);
-        return _context.SaveChangesAsync().ContinueWith(t => adventure);
-
+        await _context.Adventures.AddAsync(adventure);
+        await _context.SaveChangesAsync();
+        return OperationResultDTO<Adventure>
+            .SuccessResult()
+            .WithData(adventure)
+            .WithMessage("Adventure created successfully.");
     }
 
-    public async Task<IEnumerable<Desk>> GetDesksUsingAdventureAsync(Guid adventureId)
+    public async Task<OperationResultDTO<IEnumerable<Desk>>> GetDesksUsingAdventureAsync(Guid adventureId)
     {
         var adventure = await _context.Adventures
             .Include(a => a.DesksUsingThis)
@@ -46,23 +65,31 @@ public class AdventureService : IAdventureService
 
         if (adventure == null)
         {
-            throw new KeyNotFoundException($"Adventure with ID {adventureId} not found");
+            return OperationResultDTO<IEnumerable<Desk>>
+                .FailureResult($"Adventure with ID {adventureId} not found.");
         }
 
-        return adventure.DesksUsingThis;
+        return OperationResultDTO<IEnumerable<Desk>>
+            .SuccessResult()
+            .WithData(adventure.DesksUsingThis)
+            .WithMessage("Desks using this adventure retrieved successfully.")
+            .WithPagination(PaginationOutputDTO.Create(adventure.DesksUsingThis.Count, 1, 10));
     }
 
-    public async Task<Adventure> UpdateAdventureAsync(Adventure adventure)
+    public async Task<OperationResultDTO<Adventure>> UpdateAdventureAsync(Adventure adventure)
     {
         if (adventure == null)
         {
-            throw new ArgumentNullException(nameof(adventure), "Adventure cannot be null");
+            return OperationResultDTO<Adventure>
+                .FailureResult("Adventure cannot be null");
         }
 
         var existingAdventure = await _context.Adventures.FindAsync(adventure.Id);
+
         if (existingAdventure == null)
         {
-            throw new KeyNotFoundException($"Adventure with ID {adventure.Id} not found");
+            return OperationResultDTO<Adventure>
+                .FailureResult($"Adventure with ID {adventure.Id} not found.");
         }
 
         existingAdventure.Title = adventure.Title;
@@ -72,18 +99,27 @@ public class AdventureService : IAdventureService
         _context.Adventures.Update(existingAdventure);
         await _context.SaveChangesAsync();
 
-        return existingAdventure;
+        return OperationResultDTO<Adventure>
+            .SuccessResult()
+            .WithData(existingAdventure)
+            .WithMessage("Adventure updated successfully.")
+            .WithPagination(PaginationOutputDTO.Create(1, 1, 10));
     }
 
-    public Task DeleteAdventureAsync(Guid adventureId)
+    public Task<OperationResultDTO<Adventure>> DeleteAdventureAsync(Guid adventureId)
     {
-        var adventure = _context.Adventures.FirstOrDefault(x=>x.Id==adventureId);
+        var adventure = _context.Adventures.FirstOrDefault(x => x.Id == adventureId);
         if (adventure == null)
         {
-            throw new KeyNotFoundException($"Adventure with ID {adventureId} not found");
+            return Task.FromResult(OperationResultDTO<Adventure>
+                .FailureResult($"Adventure with ID {adventureId} not found."));
         }
 
         _context.Adventures.Remove(adventure);
-        return _context.SaveChangesAsync();
+        _context.SaveChangesAsync();
+        return Task.FromResult(OperationResultDTO<Adventure>
+            .SuccessResult()
+            .WithMessage("Adventure deleted successfully.")
+            .WithData(adventure));
     }
 }

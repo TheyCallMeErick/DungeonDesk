@@ -34,7 +34,8 @@ public class AdventureServiceTests  : IDisposable
         var result = await _adventureService.GetAdventuresAsync();
 
         // Assert
-        Assert.Equal(adventures.Count(), result.Count());
+        Assert.NotNull(result.Data);
+        Assert.Equal(adventures.Count(), result.Data.Count());
     }
 
     [Fact]
@@ -50,17 +51,23 @@ public class AdventureServiceTests  : IDisposable
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(adventure.Id, result.Id);
+        Assert.NotNull(result.Data);
+        Assert.Equal(adventure.Id, result.Data.Id);
     }
 
     [Fact]
-    public async Task GetAdventureByIdAsync_ShouldReturnThrowException_WhenNotExists()
+    public async Task GetAdventureByIdAsync_ShouldReturnError_WhenNotExists()
     {
         // Arrange
         var nonExistentId = Guid.NewGuid();
 
-        // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(async () =>  await _adventureService.GetAdventureByIdAsync(nonExistentId));
+        // Act
+        var result = await _adventureService.GetAdventureByIdAsync(nonExistentId);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal($"Adventure with ID {nonExistentId} not found.", result.Message);
+        Assert.Null(result.Data);
     }
 
     [Fact]
@@ -76,7 +83,8 @@ public class AdventureServiceTests  : IDisposable
         // Assert
         var result = await _adventureService.GetAdventureByIdAsync(adventure.Id);
         Assert.NotNull(result);
-        Assert.Equal(adventure.Id, result.Id);
+        Assert.NotNull(result.Data);
+        Assert.Equal(adventure.Id, result.Data.Id);
     }
 
     [Fact]
@@ -96,17 +104,23 @@ public class AdventureServiceTests  : IDisposable
         // Assert
         var result = await _adventureService.GetAdventureByIdAsync(adventure.Id);
         Assert.NotNull(result);
-        Assert.Equal(adventure.Title, result.Title);
+        Assert.NotNull(result.Data);
+        Assert.Equal(adventure.Title, result.Data.Title);
     }
 
     [Fact]
-    public async Task UpdateAdventureAsync_ShouldThrowException_WhenNotExists()
+    public async Task UpdateAdventureAsync_ShouldReturnError_WhenNotExists()
     {
         // Arrange
         var adventure = AdventureFaker.MakeOne();
 
-        // Act & Assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(() => _adventureService.UpdateAdventureAsync(adventure));
+        // Act
+        var result = await _adventureService.UpdateAdventureAsync(adventure);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal($"Adventure with ID {adventure.Id} not found.", result.Message);
+        Assert.Null(result.Data);
     }
 
     [Fact]

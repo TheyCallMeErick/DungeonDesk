@@ -39,7 +39,8 @@ public class SessionServiceTests : IDisposable
         var sessions = await _sessionService.GetSessionsByDeskIdAsync(desk.Id);
 
         // Assert
-        Assert.Equal(2, sessions.Count());
+        Assert.NotNull(sessions.Data);
+        Assert.Equal(2, sessions.Data.Count());
     }
 
     [Fact]

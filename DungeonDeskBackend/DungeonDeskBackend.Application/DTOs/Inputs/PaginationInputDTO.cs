@@ -12,4 +12,7 @@ public class PaginationInputDTO
         Page = page;
         PageSize = pageSize;
     }
+
+    public int Skip => (Page - 1) * PageSize;
+    public int Take => PageSize;
 }

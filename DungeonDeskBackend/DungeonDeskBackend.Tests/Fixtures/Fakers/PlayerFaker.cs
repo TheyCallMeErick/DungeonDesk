@@ -9,10 +9,7 @@ public class PlayerFaker
     {
         return new Faker<Player>()
             .RuleFor(p => p.Id, f => Guid.NewGuid())
-            .RuleFor(p => p.CreatedAt, f => f.Date.Past())
-            .RuleFor(p => p.Email, f => f.Internet.Email())
-            .RuleFor(p => p.Password, f => "")
-            .RuleFor(p => p.Name, f => f.Person.Name);
+            .RuleFor(p => p.CreatedAt, f => f.Date.Past());
     }
 
     public static Player MakeOne() => Make().Generate();

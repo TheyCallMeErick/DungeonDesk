@@ -56,8 +56,6 @@ public class PlayerService : IPlayerService
             return OperationResultDTO<Player>
                 .FailureResult($"Player with ID {id} not found.");
         }
-
-        existingPlayer.Name = player.Name;
         existingPlayer.UpdatedAt = DateTime.UtcNow;
 
         _context.Players.Update(existingPlayer);

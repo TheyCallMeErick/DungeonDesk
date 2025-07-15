@@ -40,8 +40,6 @@ public class PlayerServiceTests : IDisposable
         Assert.True(result.Success);
         Assert.NotNull(result.Data);
         Assert.Equal(2, result.Data.Count());
-        Assert.Contains(_dbContext.Players, p => p.Name == player1.Name);
-        Assert.Contains(_dbContext.Players, p => p.Name == player2.Name);
     }
 
     [Fact]
@@ -56,9 +54,7 @@ public class PlayerServiceTests : IDisposable
         // Assert
         Assert.True(result.Success);
         Assert.NotNull(result.Data);
-        Assert.Equal(player.Name, result.Data.Name);
         Assert.Single(_dbContext.Players);
-        Assert.Contains(_dbContext.Players, p => p.Name == player.Name);
     }
 
     [Fact]
@@ -67,15 +63,12 @@ public class PlayerServiceTests : IDisposable
         // Arrange
         var player = PlayerFaker.MakeOne();
         await _playerService.CreatePlayerAsync(player);
-        player.Name = "Updated Name";
-
         // Act
         var result = await _playerService.UpdatePlayerAsync(player.Id, player);
 
         // Assert
         Assert.True(result.Success);
         Assert.NotNull(result.Data);
-        Assert.Equal("Updated Name", result.Data.Name);
     }
 
     [Fact]
@@ -92,8 +85,6 @@ public class PlayerServiceTests : IDisposable
         Assert.True(result.Success);
         Assert.Null(result.Data);
         Assert.Empty(_dbContext.Players);
-        Assert.DoesNotContain(_dbContext.Players, p => p.Name == player.Name);
-        Assert.DoesNotContain(_dbContext.Players, p => p.Name == "Player to Delete");
     }
 
     [Fact]

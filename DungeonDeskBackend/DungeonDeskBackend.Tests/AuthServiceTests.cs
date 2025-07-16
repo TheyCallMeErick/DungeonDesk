@@ -54,7 +54,7 @@ public class AuthServiceTests : IDisposable
         // Assert
         Assert.True(result.Success);
         Assert.NotNull(result.Data);
-        Assert.NotEmpty(result.Data.Token);
+        Assert.NotEmpty(result.Data.AccessToken);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class AuthServiceTests : IDisposable
 
         Assert.True(authResult.Success);
         Assert.NotNull(authResult.Data);
-        Assert.NotEmpty(authResult.Data.Token);
+        Assert.NotEmpty(authResult.Data.AccessToken);
 
         // Act
         var refreshResult = await _authService.RefreshAccessTokenAsync(authResult.Data.RefreshToken!);

@@ -65,8 +65,8 @@ public class TokenManagerServiceTests : IDisposable
         // Assert
         Assert.True(result.Success);
         Assert.NotNull(result.Data);
-        Assert.NotEmpty(result.Data.Token);
-        Assert.NotEqual(token.Token, result.Data.Token);
+        Assert.NotEmpty(result.Data.AccessToken);
+        Assert.NotEqual(token.Token, result.Data.AccessToken);
     }
 
     [Fact]

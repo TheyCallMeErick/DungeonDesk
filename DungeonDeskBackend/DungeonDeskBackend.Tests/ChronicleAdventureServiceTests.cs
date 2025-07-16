@@ -1,4 +1,5 @@
 using DungeonDeskBackend.Application.Data;
+using DungeonDeskBackend.Application.DTOs.Inputs.Chronicle;
 using DungeonDeskBackend.Application.Services;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Enums;
@@ -6,7 +7,7 @@ using DungeonDeskBackend.Domain.Models;
 using DungeonDeskBackend.Tests.Fixtures.Fakers;
 using Microsoft.EntityFrameworkCore;
 
-namespace DungeonDeskBackend.Tests; 
+namespace DungeonDeskBackend.Tests;
 
 public class ChronicleServiceTests : IDisposable
 {
@@ -41,7 +42,13 @@ public class ChronicleServiceTests : IDisposable
         _dbContext.Sessions.Add(session);
         await _dbContext.SaveChangesAsync();
         //Act
-        var result = await _chronicleService.AddChronicleAsync(session.Id, "Title", "content", player.Id);
+        var result = await _chronicleService.AddChronicleAsync(
+            new AddChronicleInputDTO(
+            sessionId: session.Id,
+            title: "Title",
+            content: "content",
+            authorId: player.Id)
+        );
         // Assert
         Assert.True(result.Success);
         Assert.Single(_dbContext.Chronicles);
@@ -67,7 +74,13 @@ public class ChronicleServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _chronicleService.AddChronicleAsync(session.Id, "Title", "content", player.Id);
+        var result = await _chronicleService.AddChronicleAsync(
+            new AddChronicleInputDTO(
+                sessionId: session.Id,
+                title: "Title",
+                content: "content",
+                authorId: player.Id)
+        );
 
         // Assert
         Assert.False(result.Success);
@@ -104,7 +117,12 @@ public class ChronicleServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _chronicleService.UpdateChronicleAsync(chronicle.Id, "New Title", "New Content", player.Id);
+        var result = await _chronicleService.UpdateChronicleAsync(new UpdateChronicleInputDTO(
+            chronicleId: chronicle.Id,
+            title: "New Title",
+            content: "New Content",
+            authorId: player.Id)
+        );
 
         // Assert
         Assert.True(result.Success);
@@ -142,10 +160,15 @@ public class ChronicleServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _chronicleService.UpdateChronicleAsync(chronicle.Id, "New Title", "New Content", player.Id);
+        var result = await _chronicleService.UpdateChronicleAsync(new UpdateChronicleInputDTO(
+            chronicleId: chronicle.Id,
+            title: "New Title",
+            content: "New Content",
+            authorId: player.Id)
+        );
 
         // Assert
-        chronicle = await _dbContext.Chronicles.FirstAsync(x=>x.Id == chronicle.Id);
+        chronicle = await _dbContext.Chronicles.FirstAsync(x => x.Id == chronicle.Id);
         Assert.False(result.Success);
         Assert.Equal("Old Title", chronicle.Title);
         Assert.Equal("Old Content", chronicle.Content);
@@ -171,7 +194,12 @@ public class ChronicleServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _chronicleService.UpdateChronicleAsync(Guid.NewGuid(), "New Title", "New Content", player.Id);
+        var result = await _chronicleService.UpdateChronicleAsync(new UpdateChronicleInputDTO(
+            chronicleId: Guid.NewGuid(),
+            title: "New Title",
+            content: "New Content",
+            authorId: player.Id)
+        );
 
         // Assert
         Assert.False(result.Success);
@@ -208,7 +236,12 @@ public class ChronicleServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _chronicleService.DeleteChronicleAsync(chronicle.Id, player.Id);
+        var result = await _chronicleService.DeleteChronicleAsync(
+            new DeleteChronicleInputDTO(
+                chronicleId: chronicle.Id,
+                authorId: player.Id
+                )
+        );
 
         // Assert
         Assert.True(result.Success);
@@ -245,7 +278,12 @@ public class ChronicleServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _chronicleService.DeleteChronicleAsync(chronicle.Id, player.Id);
+        var result = await _chronicleService.DeleteChronicleAsync(
+            new DeleteChronicleInputDTO(
+                chronicleId: chronicle.Id,
+                authorId: player.Id
+            )
+        );
 
         // Assert
         Assert.False(result.Success);
@@ -272,7 +310,12 @@ public class ChronicleServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _chronicleService.DeleteChronicleAsync(Guid.NewGuid(), player.Id);
+        var result = await _chronicleService.DeleteChronicleAsync(
+            new DeleteChronicleInputDTO(
+                chronicleId: Guid.NewGuid(),
+                authorId: player.Id
+            )
+        );
 
         // Assert
         Assert.False(result.Success);

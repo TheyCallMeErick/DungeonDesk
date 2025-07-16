@@ -1,5 +1,8 @@
 using DungeonDeskBackend.Application.Data;
+using DungeonDeskBackend.Application.DTOs.Inputs;
+using DungeonDeskBackend.Application.DTOs.Inputs.Desk;
 using DungeonDeskBackend.Application.DTOs.Outputs;
+using DungeonDeskBackend.Application.Repositories.Interfaces;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +12,12 @@ namespace DungeonDeskBackend.Application.Services;
 public class DeskService : IDeskService
 {
     private readonly DungeonDeskDbContext _context;
+    private readonly IDeskRepository _deskRepository;
 
-    public DeskService(DungeonDeskDbContext context)
+    public DeskService(DungeonDeskDbContext context, IDeskRepository deskRepository)
     {
         _context = context;
+        _deskRepository = deskRepository;
     }
 
     public async Task<OperationResultDTO<Desk>> CreateDeskAsync(Desk desk)
@@ -56,19 +61,14 @@ public class DeskService : IDeskService
             .WithMessage("Desk retrieved successfully.");
     }
 
-    public Task<OperationResultDTO<IEnumerable<Desk>>> GetDesksAsync()
+    public async Task<OperationResultDTO<IEnumerable<Desk>>> GetDesksAsync(QueryInputDTO<GetDesksQueryDTO> queryInput)
     {
-        var data = _context.Desks.ToList();
-        if (data == null || !data.Any())
-        {
-            return Task.FromResult(OperationResultDTO<IEnumerable<Desk>>
-                .FailureResult("No desks found."));
-        }
-        return Task.FromResult(OperationResultDTO<IEnumerable<Desk>>
+        var data = await _deskRepository.GetDesksAsync(queryInput);
+        return OperationResultDTO<IEnumerable<Desk>>
             .SuccessResult()
             .WithData(data)
             .WithMessage("Desks retrieved successfully.")
-            .WithPagination(PaginationOutputDTO.Create(data.Count, 1, 10)));
+            .WithPagination(PaginationOutputDTO.Create(data.Count(), 1, 10));
     }
 
     public async Task<OperationResultDTO<IEnumerable<Player>>> GetPlayersByDeskIdAsync(Guid deskId)

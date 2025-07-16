@@ -28,11 +28,12 @@ public static class ApiServiceConfiguration
 
         app.UseHttpsRedirection();
         app.UseCors(builder =>
-{
-    builder.AllowAnyOrigin()
-           .AllowAnyMethod()
-           .AllowAnyHeader();
-});
+            {
+                builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            }
+        );
         app.MapControllers();
     }
 }

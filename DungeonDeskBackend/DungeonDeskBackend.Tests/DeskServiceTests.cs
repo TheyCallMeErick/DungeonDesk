@@ -34,9 +34,20 @@ public class DeskServiceTests : IDisposable
     {
         // Arrange
         var desk = DeskFaker.MakeOne();
+        var master = PlayerFaker.MakeOne();
+        var adventure = AdventureFaker.MakeOne();
+        _dbContext.Players.Add(master);
+        _dbContext.Adventures.Add(adventure);
+        _dbContext.SaveChanges();
 
         // Act
-        var result = await _deskService.CreateDeskAsync(desk);
+        var result = await _deskService.CreateDeskAsync(new CreateDeskInputDTO(
+            Name: desk.Name,
+            Description: desk.Description,
+            MaxPlayers: desk.MaxPlayers,
+            AdventureId: adventure.Id,
+            MasterId: master.Id
+        ));
 
         // Assert
         Assert.True(result.Success);
@@ -263,12 +274,23 @@ public class DeskServiceTests : IDisposable
     {
         // Arrange
         var desk = DeskFaker.MakeOne();
+        var master = PlayerFaker.MakeOne();
+        desk.PlayerDesks.Add(new PlayerDesk
+        {
+            Player = master,
+            Role = EPlayerDeskRole.DeskMaster
+        });
         await _dbContext.Desks.AddAsync(desk);
         await _dbContext.SaveChangesAsync();
         desk.Name = "Updated Desk Name";
 
         // Act
-        var result = await _deskService.UpdateDeskAsync(desk.Id, desk);
+        var result = await _deskService.UpdateDeskAsync(new UpdateDeskInputDTO(
+            Name: desk.Name,
+            Description: desk.Description,
+            MasterId: master.Id,
+            DeskId: desk.Id
+        ));
 
         // Assert
         Assert.True(result.Success);

@@ -47,18 +47,25 @@ public class AdventureService : IAdventureService
             .WithData(adventure)
             .WithMessage("Adventure retrieved successfully.");
     }
-    public async Task<OperationResultDTO<Adventure>> CreateAdventureAsync(Adventure adventure)
+    public async Task<OperationResultDTO<Adventure>> CreateAdventureAsync(CreateAdventureInputDTO adventure)
     {
         if (adventure == null)
         {
             return OperationResultDTO<Adventure>
                 .FailureResult("Adventure cannot be null");
         }
-        await _context.Adventures.AddAsync(adventure);
+        var data = new Adventure
+        {
+            Id = Guid.NewGuid(),
+            Title = adventure.Title,
+            Description = adventure.Description,
+            AuthorId = adventure.AuthorId
+        };
+        await _context.Adventures.AddAsync(data);
         await _context.SaveChangesAsync();
         return OperationResultDTO<Adventure>
             .SuccessResult()
-            .WithData(adventure)
+            .WithData(data)
             .WithMessage("Adventure created successfully.");
     }
 
@@ -77,38 +84,40 @@ public class AdventureService : IAdventureService
         return OperationResultDTO<IEnumerable<Desk>>
             .SuccessResult()
             .WithData(adventure.DesksUsingThis)
-            .WithMessage("Desks using this adventure retrieved successfully.")
-            .WithPagination(PaginationOutputDTO.Create(adventure.DesksUsingThis.Count, 1, 10));
+            .WithMessage("Desks using this adventure retrieved successfully.");
     }
 
-    public async Task<OperationResultDTO<Adventure>> UpdateAdventureAsync(Adventure adventure)
+    public async Task<OperationResultDTO<Adventure>> UpdateAdventureAsync(UpdateAdventureInputDTO dto)
     {
-        if (adventure == null)
+        if (dto == null)
         {
             return OperationResultDTO<Adventure>
                 .FailureResult("Adventure cannot be null");
         }
 
-        var existingAdventure = await _context.Adventures.FindAsync(adventure.Id);
+        var existingAdventure = await _context.Adventures.FindAsync(dto.AdventureId);
 
         if (existingAdventure == null)
         {
             return OperationResultDTO<Adventure>
-                .FailureResult($"Adventure with ID {adventure.Id} not found.");
+                .FailureResult($"Adventure with ID {dto.AdventureId} not found.");
         }
 
-        existingAdventure.Title = adventure.Title;
-        existingAdventure.Description = adventure.Description;
-        existingAdventure.AuthorId = adventure.AuthorId;
+        if(dto.UserId != existingAdventure.AuthorId)
+        {
+            return OperationResultDTO<Adventure>
+                .FailureResult("You do not have permission to update this adventure.");
+        }
 
+        existingAdventure.Title = dto.Title;
+        existingAdventure.Description = dto.Description;
         _context.Adventures.Update(existingAdventure);
         await _context.SaveChangesAsync();
 
         return OperationResultDTO<Adventure>
             .SuccessResult()
             .WithData(existingAdventure)
-            .WithMessage("Adventure updated successfully.")
-            .WithPagination(PaginationOutputDTO.Create(1, 1, 10));
+            .WithMessage("Adventure updated successfully.");
     }
 
     public Task<OperationResultDTO<Adventure>> DeleteAdventureAsync(Guid adventureId)

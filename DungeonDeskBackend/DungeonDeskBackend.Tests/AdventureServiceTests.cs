@@ -81,14 +81,16 @@ public class AdventureServiceTests  : IDisposable
         var adventure = AdventureFaker.MakeOne();
 
         // Act
-        await _adventureService.CreateAdventureAsync(adventure);
-        await _dbContext.SaveChangesAsync();
+        var result = await _adventureService.CreateAdventureAsync(new CreateAdventureInputDTO
+        (
+            title : adventure.Title,
+            description : adventure.Description,
+            authorId : adventure.AuthorId
+        ));
 
         // Assert
-        var result = await _adventureService.GetAdventureByIdAsync(adventure.Id);
-        Assert.NotNull(result);
-        Assert.NotNull(result.Data);
-        Assert.Equal(adventure.Id, result.Data.Id);
+        Assert.True(result.Success);
+        Assert.Contains(_dbContext.Adventures, a => a.Title == adventure.Title);
     }
 
     [Fact]
@@ -102,7 +104,13 @@ public class AdventureServiceTests  : IDisposable
         adventure.Title = "Updated Adventure";
 
         // Act
-        await _adventureService.UpdateAdventureAsync(adventure);
+        await _adventureService.UpdateAdventureAsync(new UpdateAdventureInputDTO
+        (
+            AdventureId: adventure.Id,
+            Title: adventure.Title,
+            Description: adventure.Description,
+            UserId: adventure.AuthorId
+        ));
         await _dbContext.SaveChangesAsync();
 
         // Assert
@@ -119,7 +127,13 @@ public class AdventureServiceTests  : IDisposable
         var adventure = AdventureFaker.MakeOne();
 
         // Act
-        var result = await _adventureService.UpdateAdventureAsync(adventure);
+        var result = await _adventureService.UpdateAdventureAsync(new UpdateAdventureInputDTO
+        (
+            AdventureId: adventure.Id,
+            Title: adventure.Title,
+            Description: adventure.Description,
+            UserId: adventure.AuthorId
+        ));
 
         // Assert
         Assert.False(result.Success);

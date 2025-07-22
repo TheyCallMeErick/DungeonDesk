@@ -25,7 +25,17 @@ public static class AdventureDTOExtensions
             }
         };
     }
-    
+
+    public static CreateAdventureInputDTO ToInputDto(this CreateAdventureRequestDTO request)
+    {
+        return new CreateAdventureInputDTO
+        (
+            title : request.title,
+            description : request.description,
+            authorId : Guid.Empty
+        );
+    }
+
     public static ResponseAdventureDTO ToResponseDto(this Adventure adventure)
     {
         return new ResponseAdventureDTO(

@@ -1,4 +1,6 @@
+using BCrypt.Net;
 using DungeonDeskBackend.Application.Data;
+using DungeonDeskBackend.Application.DTOs.Inputs.Player;
 using DungeonDeskBackend.Application.DTOs.Outputs;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Enums;
@@ -38,8 +40,30 @@ public class PlayerService : IPlayerService
             .WithMessage("Player retrieved successfully.");
     }
 
-    public async Task<OperationResultDTO<Player>> CreatePlayerAsync(Player player)
+    public async Task<OperationResultDTO<Player>> CreatePlayerAsync(CreatePlayerInputDTO dto)
     {
+        var existingPlayer = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == dto.Email || u.Username == dto.Username);
+
+        if (existingPlayer != null)
+        {
+            return OperationResultDTO<Player>
+                .FailureResult("A player with the same email or username already exists.");
+        }
+
+        var user = new User
+        {
+            Name = dto.Name,
+            Username = dto.Username,
+            Email = dto.Email,
+            Password = BCrypt.Net.BCrypt.HashPassword(dto.Password)
+        };
+
+        var player = new Player
+        {
+            User = user,
+        };
+
         _context.Players.Add(player);
         await _context.SaveChangesAsync();
         return OperationResultDTO<Player>

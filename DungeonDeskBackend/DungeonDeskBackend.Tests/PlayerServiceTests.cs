@@ -1,4 +1,5 @@
 ﻿using DungeonDeskBackend.Application.Data;
+using DungeonDeskBackend.Application.DTOs.Inputs.Player;
 using DungeonDeskBackend.Application.Services;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Enums;
@@ -46,10 +47,17 @@ public class PlayerServiceTests : IDisposable
     public async Task CreatePlayerAsync_ShouldAddPlayer()
     {
         // Arrange
-        var player = PlayerFaker.MakeOne();
-
+        var user = UserFaker.MakeOne();
+    
         // Act
-        var result = await _playerService.CreatePlayerAsync(player);
+        var result = await _playerService.CreatePlayerAsync(
+            new CreatePlayerInputDTO(
+                Name: user.Name,
+                Email: user.Email,
+                Username: user.Username,
+                Password: user.Password
+            )
+        );
 
         // Assert
         Assert.True(result.Success);
@@ -62,7 +70,8 @@ public class PlayerServiceTests : IDisposable
     {
         // Arrange
         var player = PlayerFaker.MakeOne();
-        await _playerService.CreatePlayerAsync(player);
+        var user = UserFaker.MakeOne();
+        
         // Act
         var result = await _playerService.UpdatePlayerAsync(player.Id, player);
 
@@ -76,7 +85,8 @@ public class PlayerServiceTests : IDisposable
     {
         // Arrange
         var player = PlayerFaker.MakeOne();
-        await _playerService.CreatePlayerAsync(player);
+        _dbContext.Players.Add(player);
+        await _dbContext.SaveChangesAsync();
 
         // Act
         var result = await _playerService.DeletePlayerAsync(player.Id);
@@ -134,7 +144,8 @@ public class PlayerServiceTests : IDisposable
         // Arrange
         var player = PlayerFaker.MakeOne();
         var desk = DeskFaker.MakeOne();
-        await _playerService.CreatePlayerAsync(player);
+        await _dbContext.Players.AddAsync(player);
+        await _dbContext.SaveChangesAsync();
         await _dbContext.Desks.AddAsync(desk);
         await _dbContext.SaveChangesAsync();
 
@@ -154,13 +165,13 @@ public class PlayerServiceTests : IDisposable
         // Arrange
         var player1 = PlayerFaker.MakeOne();
         var player2 = PlayerFaker.MakeOne();
+
         var desk = DeskFaker.MakeOne();
         desk.MaxPlayers = 1;
-
-        await _playerService.CreatePlayerAsync(player1);
-        await _playerService.CreatePlayerAsync(player2);
+        await _dbContext.Players.AddRangeAsync(player1, player2);
         await _dbContext.Desks.AddAsync(desk);
         await _dbContext.SaveChangesAsync();
+
         await _playerService.JoinDeskAsync(player1.Id, desk.Id);
 
         // Act
@@ -195,7 +206,7 @@ public class PlayerServiceTests : IDisposable
         var player = PlayerFaker.MakeOne();
         var desk = DeskFaker.MakeOne();
         desk.PlayerDesks.Add(new PlayerDesk { PlayerId = player.Id, DeskId = desk.Id, Role = EPlayerDeskRole.Player, JoinedAt = DateTime.UtcNow });
-        await _playerService.CreatePlayerAsync(player);
+        await _dbContext.Players.AddAsync(player);
         await _dbContext.Desks.AddAsync(desk);
         await _dbContext.SaveChangesAsync();
 
@@ -212,7 +223,8 @@ public class PlayerServiceTests : IDisposable
     {
         // Arrange
         var player = PlayerFaker.MakeOne();
-        await _playerService.CreatePlayerAsync(player);
+        _dbContext.Players.Add(player);
+        await _dbContext.SaveChangesAsync();
         var nonexistentDeskId = Guid.NewGuid();
 
         // Act

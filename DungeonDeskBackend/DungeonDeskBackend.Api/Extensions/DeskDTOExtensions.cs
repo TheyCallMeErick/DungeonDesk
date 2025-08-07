@@ -29,7 +29,7 @@ public static class DeskDTOExtensions
         };
     }
 
-    public static ResponseDeskDTO ToResponseDto(this DeskOutputDTO desk)
+    public static ResponseDeskDTO ToResponseDTO(this DeskOutputDTO desk)
     {
         return new ResponseDeskDTO(
             Id: desk.Id,
@@ -45,7 +45,7 @@ public static class DeskDTOExtensions
         this OperationResultDTO<IEnumerable<DeskOutputDTO>> result)
     {
         return new PaginatedResponseDTO<ResponseDeskDTO>(
-            Items: result.Data != null ? result.Data.ToList().ConvertAll(element => element.ToResponseDto()) : new List<ResponseDeskDTO>(),
+            Items: result.Data != null ? result.Data.ToList().ConvertAll(element => element.ToResponseDTO()) : new List<ResponseDeskDTO>(),
             Pagination: result.Pagination != null ? new PaginationResponseDTO
             (
                 CurrentPage: result.Pagination.CurrentPage,

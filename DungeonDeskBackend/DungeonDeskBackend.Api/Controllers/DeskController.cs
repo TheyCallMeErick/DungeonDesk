@@ -42,7 +42,7 @@ public class DeskController : ControllerBase
         {
             return NotFound(result.Message);
         }
-        return Ok(result.Data!.ToResponseDto());
+        return Ok(result.Data!.ToResponseDTO());
     }
 
     [HttpPost]
@@ -63,7 +63,7 @@ public class DeskController : ControllerBase
         {
             return BadRequest(result.Message);
         }
-        return Ok(result.Data!.ToResponseDto());
+        return Ok(result.Data!.ToResponseDTO());
     }
 
     [HttpPatch("{deskId}")]

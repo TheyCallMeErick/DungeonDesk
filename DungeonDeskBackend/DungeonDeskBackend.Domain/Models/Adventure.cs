@@ -8,4 +8,5 @@ public class Adventure : BaseModel
     public Player? Author { get; set; }
 
     public ICollection<Desk> DesksUsingThis { get; set; } = new List<Desk>();
+    public ICollection<AdventureSheetTemplate> AdventureSheetTemplates { get; set; } = new List<AdventureSheetTemplate>();
 }

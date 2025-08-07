@@ -1,6 +1,8 @@
 
 
 using DungeonDeskBackend.Application.Data;
+using DungeonDeskBackend.Application.Repositories;
+using DungeonDeskBackend.Application.Repositories.Interfaces;
 using DungeonDeskBackend.Application.Services;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,7 @@ public static class ApplicationServiceConfiguration
     {
         services.AddScoped<IDeskService, DeskService>();
         services.AddScoped<IPlayerService, PlayerService>();
+        services.AddScoped<IDeskRepository, DeskRepository>();
         services.AddScoped<ITokenManagerService, TokenManagerService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddDbContext<DungeonDeskDbContext>();

@@ -1,3 +1,4 @@
+using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DungeonDeskBackend.Application.Data;
@@ -13,12 +14,20 @@ public class DungeonDeskDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    public DbSet<Domain.Models.Chronicle> Chronicles { get; set; }
-    public DbSet<Domain.Models.Desk> Desks { get; set; }
-    public DbSet<Domain.Models.Player> Players { get; set; }
-    public DbSet<Domain.Models.Session> Sessions { get; set; }
-    public DbSet<Domain.Models.Adventure> Adventures { get; set; }
-    public DbSet<Domain.Models.PlayerDesk> PlayerDesks { get; set; }
-    public DbSet<Domain.Models.User> Users { get; set; }
-    public DbSet<Domain.Models.RefreshToken> RefreshTokens { get; set; }
+    public DbSet<Chronicle> Chronicles { get; set; }
+    public DbSet<Desk> Desks { get; set; }
+    public DbSet<Player> Players { get; set; }
+    public DbSet<Session> Sessions { get; set; }
+    public DbSet<Adventure> Adventures { get; set; }
+    public DbSet<PlayerDesk> PlayerDesks { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<Sheet> Sheets { get; set; }
+    public DbSet<AdventureSheetTemplate> AdventureSheetTemplates { get; set; }
+    public DbSet<AdventureSheetField> AdventureSheetFields { get; set; }
+    public DbSet<AdventureSheetFieldValidations> AdventureSheetFieldValidations { get; set; }
+    public DbSet<AdventureSheetFieldOptions> AdventureSheetFieldOptions { get; set; }
+    public DbSet<AdventureSheetInventory> AdventureSheetInventories { get; set; }
+    public DbSet<Item> Items { get; set; }
+
 }

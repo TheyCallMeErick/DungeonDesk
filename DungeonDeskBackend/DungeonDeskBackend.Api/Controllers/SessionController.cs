@@ -1,3 +1,4 @@
+using DungeonDeskBackend.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +9,9 @@ namespace DungeonDeskBackend.Api.Controllers;
 [Authorize]
 public class SessionController
 {
-    public SessionController()
+    private readonly ISessionService _sessionService;
+    public SessionController(ISessionService sessionService)
     {
-        // constructor logic here
+        _sessionService = sessionService;
     }
-
-    // class members here
 }

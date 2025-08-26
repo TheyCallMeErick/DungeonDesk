@@ -9,8 +9,6 @@ public class RefreshTokenMapping : IEntityTypeConfiguration<RefreshToken>
 
     public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
-        builder.HasKey(e => e.Id);
-
         builder.Property(e => e.Token)
               .IsRequired()
               .HasMaxLength(500);

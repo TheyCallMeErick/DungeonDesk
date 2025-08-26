@@ -8,8 +8,6 @@ public class UserMapping : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasKey(e => e.Id);
-
         builder.Property(e => e.Username)
               .HasMaxLength(50);
 

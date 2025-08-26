@@ -24,5 +24,9 @@ public class AdventureMapping : IEntityTypeConfiguration<Adventure>
         builder.HasMany(e => e.DesksUsingThis)
               .WithOne(d => d.Adventure)
               .HasForeignKey(d => d.AdventureId);
+
+        builder.HasMany(e => e.AdventureSheetTemplates)
+              .WithOne(ast => ast.Adventure)
+              .HasForeignKey(ast => ast.AdventureId);
     }
 }

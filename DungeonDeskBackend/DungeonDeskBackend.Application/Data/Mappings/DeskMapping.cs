@@ -8,8 +8,6 @@ public class DeskMapping : IEntityTypeConfiguration<Desk>
 {
     public void Configure(EntityTypeBuilder<Desk> builder)
     {
-        builder.HasKey(e => e.Id);
-
         builder.Property(e => e.Name)
               .IsRequired()
               .HasMaxLength(200);

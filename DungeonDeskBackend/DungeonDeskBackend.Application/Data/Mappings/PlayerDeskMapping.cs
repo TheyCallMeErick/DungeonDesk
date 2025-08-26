@@ -8,8 +8,6 @@ public class PlayerDeskMapping : IEntityTypeConfiguration<PlayerDesk>
 {
     public void Configure(EntityTypeBuilder<PlayerDesk> builder)
     {
-        builder.HasKey(pd => new { pd.PlayerId, pd.DeskId });
-
         builder.HasOne(pd => pd.Player)
                .WithMany(p => p.PlayerDesks)
                .HasForeignKey(pd => pd.PlayerId);

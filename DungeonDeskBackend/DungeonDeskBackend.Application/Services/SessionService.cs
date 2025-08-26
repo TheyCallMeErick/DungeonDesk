@@ -1,5 +1,9 @@
 using DungeonDeskBackend.Application.Data;
+using DungeonDeskBackend.Application.DTOs.Inputs.Session;
 using DungeonDeskBackend.Application.DTOs.Outputs;
+using DungeonDeskBackend.Application.DTOs.Outputs.Desk;
+using DungeonDeskBackend.Application.DTOs.Outputs.Session;
+using DungeonDeskBackend.Application.Extensions;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Models;
 using DungeonDeskBackend.Domain.Validations;
@@ -18,9 +22,9 @@ public class SessionService : ISessionService
         _context = context;
     }
 
-    public async Task<OperationResultDTO<Session>> CreateSessionAsync(Guid deskId, DateTime ScheduledAt, string Notes, Guid playerId)
+    public async Task<OperationResultDTO<Session>> CreateSessionAsync(CreateSessionInputDTO dto)
     {
-        var desk = await _context.Desks.Include(x => x.PlayerDesks).FirstOrDefaultAsync(x => x.Id == deskId);
+        var desk = await _context.Desks.Include(x => x.PlayerDesks).FirstOrDefaultAsync(x => x.Id == dto.deskId);
         if (desk == null)
         {
             throw new KeyNotFoundException("Desk not found");
@@ -30,7 +34,7 @@ public class SessionService : ISessionService
             dto: new OnlyTheDeskMasterShoudManageSessionsDTO
             {
                 Desk = desk,
-                PlayerTryingUpdateId = playerId
+                PlayerTryingUpdateId = dto.playerId
             },
             rule: new OnlyTheDeskMasterShoudManageSessions()
         );
@@ -41,9 +45,9 @@ public class SessionService : ISessionService
         }
         var session = new Session
         {
-            DeskId = deskId,
-            ScheduledAt = ScheduledAt,
-            Notes = Notes,
+            DeskId = dto.deskId,
+            ScheduledAt = dto.ScheduledAt,
+            Notes = dto.Notes,
             Chronicles = new List<Chronicle>(),
             CreatedAt = DateTime.UtcNow
         };
@@ -87,7 +91,7 @@ public class SessionService : ISessionService
             WithMessage("Session deleted successfully.");
     }
 
-    public async Task<OperationResultDTO<IEnumerable<Session>>> GetSessionsByDeskIdAsync(Guid deskId)
+    public async Task<OperationResultDTO<IEnumerable<SessionOutputDTO>>> GetSessionsByDeskIdAsync(Guid deskId)
     {
         var sessions = await _context.Sessions
             .Where(x => x.DeskId == deskId)
@@ -95,10 +99,18 @@ public class SessionService : ISessionService
             .ToListAsync();
         if (sessions == null || !sessions.Any())
         {
-            return OperationResultDTO<IEnumerable<Session>>.FailureResult($"No sessions found for desk with ID {deskId}.");
+            return OperationResultDTO<IEnumerable<SessionOutputDTO>>.FailureResult($"No sessions found for desk with ID {deskId}.");
         }
-        return OperationResultDTO<IEnumerable<Session>>.SuccessResult()
-            .WithData(sessions)
+        return OperationResultDTO<IEnumerable<SessionOutputDTO>>.SuccessResult()
+            .WithData(sessions.ConvertAll(x=> new SessionOutputDTO
+            (
+                Id : x.Id,
+                ScheduledAt : x.ScheduledAt,
+                Notes : x.Notes,
+                StartedAt : x.StartedAt,
+                EndedAt : x.EndedAt,
+                Desk: x.Desk?.ToOutputDTO()
+            )))
             .WithMessage("Sessions retrieved successfully.")
             .WithPagination(PaginationOutputDTO.Create(sessions.Count, 1, 10));
     }

@@ -2,7 +2,7 @@ using DungeonDeskBackend.Domain.Enums;
 
 namespace DungeonDeskBackend.Domain.Models;
 
-public class PlayerDesk
+public class PlayerDesk : BaseModel
 {
     public Guid PlayerId { get; set; }
     public Player? Player { get; set; }
@@ -10,4 +10,6 @@ public class PlayerDesk
     public Desk? Desk { get; set; }
     public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
     public EPlayerDeskRole Role { get; set; }
+    public Sheet? ActiveSheet { get; set; }
+    public Guid? ActiveSheetId { get; set; }
 }

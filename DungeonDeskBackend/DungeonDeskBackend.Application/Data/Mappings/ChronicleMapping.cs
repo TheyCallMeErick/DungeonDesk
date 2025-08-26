@@ -8,8 +8,6 @@ public class ChronicleMapping : IEntityTypeConfiguration<Chronicle>
 {
     public void Configure(EntityTypeBuilder<Chronicle> builder)
     {
-        builder.HasKey(e => e.Id);
-
         builder.Property(e => e.Title)
               .IsRequired()
               .HasMaxLength(200);

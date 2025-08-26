@@ -24,7 +24,7 @@ public class DungeonDeskDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Sheet> Sheets { get; set; }
     public DbSet<AdventureSheetTemplate> AdventureSheetTemplates { get; set; }
-    public DbSet<AdventureSheetField> AdventureSheetFields { get; set; }
+    public DbSet<AdventureSheetFieldValue> AdventureSheetFields { get; set; }
     public DbSet<AdventureSheetFieldValidations> AdventureSheetFieldValidations { get; set; }
     public DbSet<AdventureSheetFieldOptions> AdventureSheetFieldOptions { get; set; }
     public DbSet<AdventureSheetInventory> AdventureSheetInventories { get; set; }

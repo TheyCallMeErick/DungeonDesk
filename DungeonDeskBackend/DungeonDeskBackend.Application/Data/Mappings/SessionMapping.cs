@@ -8,8 +8,6 @@ public class SessionMapping : IEntityTypeConfiguration<Session>
 {
     public void Configure(EntityTypeBuilder<Session> builder)
     {
-        builder.HasKey(e => e.Id);
-
         builder.Property(e => e.ScheduledAt)
               .IsRequired();
 

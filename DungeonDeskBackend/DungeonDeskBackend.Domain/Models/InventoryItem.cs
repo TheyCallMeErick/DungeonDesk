@@ -1,6 +1,6 @@
 namespace DungeonDeskBackend.Domain.Models;
 
-public class InventoryItem
+public class InventoryItem : BaseModel
 {
     public Guid AdventureSheetInventoryId { get; set; }
     public AdventureSheetInventory AdventureSheetInventory { get; set; } = null!;

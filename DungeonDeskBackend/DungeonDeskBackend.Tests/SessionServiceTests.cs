@@ -1,4 +1,5 @@
 using DungeonDeskBackend.Application.Data;
+using DungeonDeskBackend.Application.DTOs.Inputs.Session;
 using DungeonDeskBackend.Application.Services;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Enums;
@@ -60,7 +61,13 @@ public class SessionServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var createdSession = await _sessionService.CreateSessionAsync(desk.Id, new DateTime(), "", master.Id);
+        var createdSession = await _sessionService.CreateSessionAsync(new CreateSessionInputDTO
+        (
+            deskId : desk.Id,
+            ScheduledAt : new DateTime(),
+            Notes : "",
+            playerId : master.Id
+        ));
 
         // Assert
         Assert.True(createdSession.Success);
@@ -84,7 +91,13 @@ public class SessionServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var createdSession = await _sessionService.CreateSessionAsync(desk.Id, new DateTime(), "", master.Id);
+        var createdSession = await _sessionService.CreateSessionAsync(new CreateSessionInputDTO
+        (
+            deskId : desk.Id,
+            ScheduledAt : new DateTime(),
+            Notes : "",
+            playerId : master.Id
+        ));
 
         // Assert
         Assert.False(createdSession.Success);
@@ -100,7 +113,13 @@ public class SessionServiceTests : IDisposable
 
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
-            await _sessionService.CreateSessionAsync(nonExistentDeskId, new DateTime(), "", master.Id));
+            await _sessionService.CreateSessionAsync(new CreateSessionInputDTO
+            (
+                deskId : nonExistentDeskId,
+                ScheduledAt : new DateTime(),
+                Notes : "",
+                playerId : master.Id
+            )));
     }
 
     [Fact]
@@ -120,7 +139,12 @@ public class SessionServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var createdSession = await _sessionService.CreateSessionAsync(desk.Id, new DateTime(), "", master.Id);
+        var createdSession = await _sessionService.CreateSessionAsync(new CreateSessionInputDTO(
+            deskId : desk.Id,
+            ScheduledAt : new DateTime(),
+            Notes : "",
+            playerId : master.Id
+        ));
 
         // Assert
         Assert.True(createdSession.Success);
@@ -143,7 +167,13 @@ public class SessionServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var createdSession = await _sessionService.CreateSessionAsync(desk.Id, new DateTime(), "", player.Id);
+        var createdSession = await _sessionService.CreateSessionAsync(new CreateSessionInputDTO
+        (
+            deskId : desk.Id,
+            ScheduledAt : new DateTime(),
+            Notes : "",
+            playerId : player.Id
+        ));
 
         // Assert
         Assert.False(createdSession.Success);

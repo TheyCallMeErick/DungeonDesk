@@ -1,0 +1,38 @@
+.login-main-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  height: 100vh;
+}
+.login-left {
+  flex: 2.5;
+  background-color: #cacaca;
+  width: 70%;
+  height: 100%;
+  display: flex;
+}
+.login-right {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+@media screen and (max-width: 1024px) {
+   .login-main-container {
+    flex-direction: column;
+  }
+  .login-left {
+    display: none;
+  }
+  .login-right {
+    flex: 1;
+    width: 100%;
+    height: 100vh;
+    padding: 1rem;
+  }
+}

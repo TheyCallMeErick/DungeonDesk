@@ -1,9 +1,10 @@
-.login-main-container {
+:host {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-direction: row;
   height: 100vh;
+  overflow: hidden;
 }
 .login-left {
   flex: 2.5;

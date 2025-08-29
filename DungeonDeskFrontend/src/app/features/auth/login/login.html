@@ -1,20 +1,40 @@
 <h1 class="amarante">Login</h1>
 <h2 class="amarante">DungeonDesk</h2>
 <div class="login-form-container">
-  <form action="">
-    <div variant="in">
-      <label for="email">Email</label>
-      <input class="input" pInputText id="email" autocomplete="off" />
+  <form [formGroup]="form">
+    <div >
+      <label for="email" class="required">Email</label>
+      <input class="input" pInputText id="email" formControlName="email" autocomplete="off" />
+      @if(form.controls.email.invalid && form.controls.email.touched){
+      <div class="validations-container">
+        @if(form.controls.email.hasError('required')){
+        <span>Type an email</span>
+        } @if(form.controls.email.hasError('email')){
+        <span>Type an valid email</span>
+        }
+      </div>
+      }
     </div>
 
-    <div variant="in">
-      <label for="password">Password</label>
-      <input class="input" id="password" type="password" />
+    <div >
+      <label for="password" class="required">Password</label>
+      <input class="input" id="password" type="password" formControlName="password" />
+      @if(form.controls.password.invalid && form.controls.password.touched){
+      <div class="validations-container">
+        @if(form.controls.password.hasError('required')){
+        <span>Type an password</span>
+        } @if(form.controls.password.hasError('minlength')){
+        <span>The password shoud have at least 6 characters</span>
+        }
+      </div>
+      }
     </div>
 
-    <a href="auth/forgot-password" class="forgot-password">Forgot Password?</a>
+    <a routerLink="/auth/forgot-password" class="forgot-password">Forgot Password?</a>
   </form>
-  <button label="Login" icon="pi pi-sign-in" class="login-button">Login</button>
-  <p>Don't have an account? <a routerLink="auth/register" class="">Create one</a></p>
+  <button label="Login" icon="pi pi-sign-in" class="login-button" (click)="onSubmit()">
+    Login
+  </button>
+  <p>Don't have an account? <a routerLink="/auth/register" class="">Create one</a></p>
 </div>
 <div class="spacer"></div>

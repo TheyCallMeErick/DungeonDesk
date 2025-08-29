@@ -1,3 +1,4 @@
+using DungeonDeskBackend.Api.Middlewares;
 using Scalar.AspNetCore;
 
 namespace DungeonDeskBackend.Api.Extensions;
@@ -15,7 +16,8 @@ public static class ApiServiceConfiguration
                                   .AllowAnyMethod()
                                   .AllowAnyHeader());
         });
-
+        services.AddExceptionHandler<GlobalExceptionHandlerMiddleware>();
+        services.AddProblemDetails();
     }
 
     public static void UseApiServices(this WebApplication app)

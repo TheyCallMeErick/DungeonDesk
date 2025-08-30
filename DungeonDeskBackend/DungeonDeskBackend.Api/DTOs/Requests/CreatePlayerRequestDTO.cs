@@ -12,6 +12,10 @@ public record CreatePlayerRequestDTO(
     [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
     [DataType(DataType.Password)]
     string Password,
+    [Required(ErrorMessage ="Password confirmation is required")]
+    [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
+    [DataType(DataType.Password)]
+    string PasswordConfirmation,
     string? Username
 ) : IValidatableObject
 {
@@ -24,6 +28,11 @@ public record CreatePlayerRequestDTO(
                 "Either Email or Username must be provided.",
                 new[] { nameof(Email), nameof(Username) }
             );
+        }
+
+        if (Password == PasswordConfirmation)
+        {
+            yield return new ValidationResult("Password and Password Confirmation doesn't match");
         }
 
         if (!string.IsNullOrWhiteSpace(Username))

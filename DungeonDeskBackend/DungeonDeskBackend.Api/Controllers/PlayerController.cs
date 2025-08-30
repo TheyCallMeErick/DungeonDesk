@@ -24,7 +24,7 @@ public class PlayerController : ControllerBase
     {
         var result = await _playerService.CreatePlayerAsync(new CreatePlayerInputDTO
         (
-            Name : request.Name,
+            Name : "",
             Email : request.Email ?? string.Empty,
             Username : request.Username ?? string.Empty, 
             Password : request.Password

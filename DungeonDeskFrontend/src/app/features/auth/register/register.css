@@ -52,6 +52,7 @@ h2 {
   font-size: 1.2rem;
   color: white;
   cursor: pointer;
+  background-color: #6c63ff;
 }
 .forgot-password {
   margin: 0 12px;

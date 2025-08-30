@@ -1,5 +1,15 @@
 
-  <div class="login-left"></div>
+  <div class="login-left" [style]="`background-image: url(${showingData.adventure.imageUrl})`">
+    <div class="background-darker">
+      <span class="game-name">{{showingData.adventure.name}}</span>
+
+      <div class="game-quote">
+        <p>{{showingData.quote.phrase}}</p>
+        <span>{{showingData.quote.author}}</span>
+      </div>
+    </div>
+
+  </div>
   <div class="login-right">
     <router-outlet></router-outlet>
   </div>

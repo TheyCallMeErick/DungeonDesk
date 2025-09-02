@@ -34,7 +34,6 @@ export class Login {
   });
 
   protected onSubmit() {
-    console.log(this.form.controls.email.hasError('email'));
     if (this.form.valid) {
       const { email, password } = this.form.value;
       if (email && password) {

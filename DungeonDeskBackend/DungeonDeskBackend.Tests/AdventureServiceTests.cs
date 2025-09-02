@@ -1,10 +1,10 @@
 using DungeonDeskBackend.Application.Data;
 using DungeonDeskBackend.Application.DTOs.Inputs;
 using DungeonDeskBackend.Application.DTOs.Inputs.Adventure;
+using DungeonDeskBackend.Application.Fakers;
 using DungeonDeskBackend.Application.Repositories;
 using DungeonDeskBackend.Application.Services;
 using DungeonDeskBackend.Application.Services.Interfaces;
-using DungeonDeskBackend.Tests.Fixtures.Fakers;
 using Microsoft.EntityFrameworkCore;
 
 namespace DungeonDeskBackend.Tests; 

@@ -1,8 +1,8 @@
 using DungeonDeskBackend.Application.Data;
 using DungeonDeskBackend.Application.DTOs.Inputs.Auth;
+using DungeonDeskBackend.Application.Fakers;
 using DungeonDeskBackend.Application.Services;
 using DungeonDeskBackend.Application.Services.Interfaces;
-using DungeonDeskBackend.Tests.Fixtures.Fakers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ObservatorioApi.Auth;

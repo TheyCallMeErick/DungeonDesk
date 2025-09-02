@@ -2,12 +2,12 @@ using System.Threading.Tasks;
 using DungeonDeskBackend.Application.Data;
 using DungeonDeskBackend.Application.DTOs.Inputs;
 using DungeonDeskBackend.Application.DTOs.Inputs.Desk;
+using DungeonDeskBackend.Application.Fakers;
 using DungeonDeskBackend.Application.Repositories;
 using DungeonDeskBackend.Application.Services;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Enums;
 using DungeonDeskBackend.Domain.Models;
-using DungeonDeskBackend.Tests.Fixtures.Fakers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 

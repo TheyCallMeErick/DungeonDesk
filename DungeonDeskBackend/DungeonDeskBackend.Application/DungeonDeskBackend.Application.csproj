@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bogus" />
     <PackageReference Include="BCrypt.Net-Next"  />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"  />
     <PackageReference Include="Microsoft.EntityFrameworkCore"  />

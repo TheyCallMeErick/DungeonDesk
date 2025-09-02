@@ -1,7 +1,7 @@
 using Bogus;
 using DungeonDeskBackend.Domain.Models;
 
-namespace DungeonDeskBackend.Tests.Fixtures.Fakers; 
+namespace DungeonDeskBackend.Application.Fakers; 
 
 public class RefreshTokenFaker
 {

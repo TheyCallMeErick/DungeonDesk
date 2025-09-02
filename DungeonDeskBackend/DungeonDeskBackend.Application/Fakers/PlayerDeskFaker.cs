@@ -2,7 +2,7 @@ using Bogus;
 using DungeonDeskBackend.Domain.Enums;
 using DungeonDeskBackend.Domain.Models;
 
-namespace DungeonDeskBackend.Tests.Fixtures.Fakers;
+namespace DungeonDeskBackend.Application.Fakers;
 
 public class PlayerDeskFaker
 {

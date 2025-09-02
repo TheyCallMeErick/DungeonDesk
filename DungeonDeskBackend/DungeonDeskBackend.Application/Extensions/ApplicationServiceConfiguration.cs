@@ -5,6 +5,7 @@ using DungeonDeskBackend.Application.Repositories;
 using DungeonDeskBackend.Application.Repositories.Interfaces;
 using DungeonDeskBackend.Application.Services;
 using DungeonDeskBackend.Application.Services.Interfaces;
+using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,6 @@ public static class ApplicationServiceConfiguration
         services.AddScoped<IAuthService, AuthService>();
         services.AddDbContext<DungeonDeskDbContext>(x =>
         {
-            Console.WriteLine("Connection String: " + configuration.GetConnectionString("DefaultConnection"));
             x.UseNpgsql(configuration.GetConnectionString("DefaultConnection"), npgsqlOptionsAction: npgsqlOptions =>
             {
                 npgsqlOptions.EnableRetryOnFailure(
@@ -32,6 +32,22 @@ public static class ApplicationServiceConfiguration
                     maxRetryDelay: TimeSpan.FromSeconds(10),
                     errorCodesToAdd: null);
             });
+
+            if (configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development")
+            {
+                x.UseSeeding((context,_) =>
+                {
+                    Seeder.Init();
+                    context.Set<User>().AddRange(Seeder.Users);
+                    context.Set<Player>().AddRange(Seeder.Players);
+                    context.Set<Adventure>().AddRange(Seeder.Adventures);
+                    context.Set<Chronicle>().AddRange(Seeder.Chronicles);
+                    context.Set<Desk>().AddRange(Seeder.Desks);
+                    context.Set<PlayerDesk>().AddRange(Seeder.PlayerDesks);
+                    context.Set<Session>().AddRange(Seeder.Sessions);
+                    context.SaveChanges();
+                });
+            }
         });
     }
 }

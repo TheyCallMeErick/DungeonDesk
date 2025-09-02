@@ -1,4 +1,5 @@
 using Bogus;
+using Bogus.Generators;
 using DungeonDeskBackend.Domain.Models;
 
 namespace DungeonDeskBackend.Application.Fakers;
@@ -9,9 +10,9 @@ public class AdventureFaker
     {
         return new Faker<Adventure>()
             .RuleFor(a => a.Id, f => Guid.NewGuid())
-            .RuleFor(a => a.CreatedAt, f => f.Date.Past())
-            .RuleFor(a => a.Title, f => f.Lorem.Sentance())
-            .RuleFor(a => a.Description, f => f.Lorem.Paragraph())
+            .RuleFor(a => a.CreatedAt, f => new Date().Past())
+            .RuleFor(a => a.Title, f => new Lorem().Sentance())
+            .RuleFor(a => a.Description, f => new Lorem().Paragraph())
             .RuleFor(a => a.AuthorId, f => Guid.NewGuid());
     }
 

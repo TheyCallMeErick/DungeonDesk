@@ -1,4 +1,5 @@
 using Bogus;
+using Bogus.Generators;
 using DungeonDeskBackend.Domain.Enums;
 using DungeonDeskBackend.Domain.Models;
 
@@ -11,7 +12,7 @@ public class PlayerDeskFaker
         return new Faker<PlayerDesk>()
             .RuleFor(pd => pd.PlayerId, f => Guid.NewGuid())
             .RuleFor(pd => pd.DeskId, f => Guid.NewGuid())
-            .RuleFor(pd => pd.JoinedAt, f => f.Date.Past())
+            .RuleFor(pd => pd.JoinedAt, f => new Date().Past())
             .RuleFor(pd => pd.Role, f => f.PickRandom<EPlayerDeskRole>());
     }
 

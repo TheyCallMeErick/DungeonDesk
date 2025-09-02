@@ -1,4 +1,5 @@
 using Bogus;
+using Bogus.Generators;
 using DungeonDeskBackend.Domain.Models;
 
 namespace DungeonDeskBackend.Application.Fakers;
@@ -14,7 +15,7 @@ public class SessionFaker
             .RuleFor(s => s.StartedAt, f => f.Date.Recent())
             .RuleFor(s => s.EndedAt, (f, s) => s.StartedAt?.AddHours(2))
             .RuleFor(s => s.DeskId, f => Guid.NewGuid())
-            .RuleFor(s => s.Notes, f => f.Lorem.Sentance());
+            .RuleFor(s => s.Notes, f => new Lorem().Sentance());
     }
 
     public static Session MakeOne() => Make().Generate();

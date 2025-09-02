@@ -1,0 +1,49 @@
+:host{
+  display: flex;
+  flex-direction: column;
+}
+
+nav{
+  height: 80px;
+  background-color: var(--color-surface);
+  color: var(--color-secondary);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 1.2em;
+}
+
+.user-container{
+  margin-left: auto;
+  color: var(--color-placeholder);
+}
+.logo-placeholder{
+  display: block;
+  height: 60px;
+  width: 60px;
+  background-color: var(--color-accent-gold);
+}
+
+nav ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+nav ul li{
+  margin: 0 8px;
+}
+
+nav ul li a, nav ul li a:link, nav ul li a:visited {
+  color: var(--color-secondary);
+  text-decoration: none;
+}
+
+.outlet-container{
+  display: flex;
+  flex-direction: column;
+  width: 100dvw;
+  height: calc(100dvh - 80px);
+  background-color: var(--color-bg);
+}

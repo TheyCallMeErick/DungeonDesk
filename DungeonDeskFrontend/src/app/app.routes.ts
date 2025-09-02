@@ -28,4 +28,14 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'tavern',
+    loadComponent: () => import('./layouts/default/default').then((m) => m.Default),
+    children: [
+      {
+        path: 'quest-board',
+        loadComponent: () => import('./features/quest-board/quest-board').then((m) => m.QuestBoard),
+      },
+    ],
+  },
 ];

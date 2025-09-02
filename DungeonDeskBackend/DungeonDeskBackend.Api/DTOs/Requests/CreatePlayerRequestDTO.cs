@@ -3,21 +3,20 @@ using System.ComponentModel.DataAnnotations;
 namespace DungeonDeskBackend.Api.DTOs.Requests; 
 
 public record CreatePlayerRequestDTO(
-    [Required(ErrorMessage = "Name is required.")]
-    [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
-    [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Name can only contain letters and spaces.")]
+    [param:StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
+    [param:RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Name can only contain letters and spaces.")]
     string Name,
-    string? Email,
-    [Required(ErrorMessage = "Password is required.")]
-    [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
-    [DataType(DataType.Password)]
+    string Email,
+    [param:Required(ErrorMessage = "Password is required.")]
+    [param:StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
+    [param:DataType(DataType.Password)]
     string Password,
-    [Required(ErrorMessage ="Password confirmation is required")]
-    [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
-    [DataType(DataType.Password)]
+    [param:Required(ErrorMessage ="Password confirmation is required")]
+    [param:StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
+    [param:DataType(DataType.Password)]
     string PasswordConfirmation,
-    string? Username
-) : IValidatableObject
+    string Username
+); /* : IValidatableObject
 {
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -55,4 +54,4 @@ public record CreatePlayerRequestDTO(
             }
         }
     }
-};
+}; */

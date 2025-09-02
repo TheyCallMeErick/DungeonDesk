@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DungeonDeskBackend.Api.Controllers;
 
 [ApiController]
-[Route("api/player")]
+[Route("api/v1/player")]
 [Authorize]
 public class PlayerController : ControllerBase
 {
@@ -24,9 +24,9 @@ public class PlayerController : ControllerBase
     {
         var result = await _playerService.CreatePlayerAsync(new CreatePlayerInputDTO
         (
-            Name : "",
-            Email : request.Email ?? string.Empty,
-            Username : request.Username ?? string.Empty, 
+            Name : request.Name,
+            Email : request.Email,
+            Username : request.Username, 
             Password : request.Password
         ));
         if (!result.Success)

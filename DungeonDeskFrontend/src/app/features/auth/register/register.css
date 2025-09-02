@@ -54,6 +54,11 @@ h2 {
   cursor: pointer;
   background-color: #6c63ff;
 }
+.required::after {
+  content: "*";
+  color: red;
+  margin-left: .4rem;
+}
 .forgot-password {
   margin: 0 12px;
 }

@@ -1,23 +1,75 @@
 <h1 class="amarante">Register</h1>
 <h2 class="amarante">DungeonDesk</h2>
 <div class="login-form-container">
-  <form action="">
+  <form [formGroup]="form">
+     <div variant="in">
+      <label for="email" class="required">Name</label>
+      <input class="input" pInputText id="name" formControlName="name" autocomplete="off" />
+      @if(form.controls.name.invalid && form.controls.name.touched){
+      <div class="validations-container">
+        @if(form.controls.name.hasError('required')){
+        <span>Type an name</span>
+        }
+      </div>
+      }
+    </div>
+     <div variant="in">
+      <label for="username" class="required">Username</label>
+      <input class="input" pInputText id="username" formControlName="username" autocomplete="off" />
+      @if(form.controls.username.invalid && form.controls.username.touched){
+      <div class="validations-container">
+        @if(form.controls.username.hasError('required')){
+        <span>Type an username</span>
+        }
+      </div>
+      }
+    </div>
     <div variant="in">
-      <label for="email">Email</label>
-      <input class="input" pInputText id="email" autocomplete="off" />
+      <label for="email" class="required">Email</label>
+      <input class="input" pInputText id="email" formControlName="email" autocomplete="off" />
+      @if(form.controls.email.invalid && form.controls.email.touched){
+      <div class="validations-container">
+        @if(form.controls.email.hasError('required')){
+        <span>Type an email</span>
+        } @if(form.controls.email.hasError('email')){
+        <span>Type an valid email</span>
+        }
+      </div>
+      }
     </div>
 
     <div variant="in">
-      <label for="password">Password</label>
-      <input class="input" id="password" type="password" />
+      <label for="password" class="required">Password</label>
+      <input class="input" id="password" formControlName="password" type="password" />
+      @if(form.controls.password.invalid && form.controls.password.touched){
+      <div class="validations-container">
+        @if(form.controls.password.hasError('required')){
+        <span>Type an password</span>
+        } @if(form.controls.password.hasError('password')){
+        <span>Type an valid password</span>
+        }
+      </div>
+      }
     </div>
 
     <div variant="in">
-      <label for="confirm-password">Confirm Password</label>
-      <input class="input" id="confirm-password" type="password" />
+      <label for="confirm-password" class="required">Confirm Password</label>
+      <input class="input" id="confirm-password" type="password" formControlName="passwordConfirmation" />
+      @if(form.controls.passwordConfirmation.invalid && form.controls.passwordConfirmation.touched){
+      <div class="validations-container">
+        @if(form.controls.passwordConfirmation.hasError('required')){
+        <span>Type an confirmation</span>
+        } @if(form.controls.passwordConfirmation.hasError('password')){
+        <span>Type an valid password confirmation</span>
+        }
+        @if(form.controls.passwordConfirmation.hasError('mismatch')){
+        <span>The password confirmation does't match</span>
+        }
+      </div>
+      }
     </div>
   </form>
-  <button label="Register" icon="pi pi-sign-in" class="login-button">Register</button>
+  <button label="Register" icon="pi pi-sign-in" class="login-button" (click)="onSubmit()">Register</button>
   <p>Already have an account? <a routerLink="/auth/login" class="">Login</a></p>
 </div>
 <div class="spacer"></div>

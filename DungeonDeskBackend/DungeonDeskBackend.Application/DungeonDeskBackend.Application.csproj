@@ -19,6 +19,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational"  />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"  />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design"  />
+    <PackageReference Include="Newtonsoft.Json"/>
   </ItemGroup>
 
   

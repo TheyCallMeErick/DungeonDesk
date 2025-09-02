@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using DungeonDeskBackend.Api.Middlewares;
 using Scalar.AspNetCore;
 
@@ -7,7 +8,10 @@ public static class ApiServiceConfiguration
 {
     public static void ConfigureApiServices(this IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
         services.AddOpenApi();
         services.AddCors(options =>
         {

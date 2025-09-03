@@ -1,4 +1,4 @@
-using Bogus;
+﻿using Bogus;
 using Bogus.Generators;
 using DungeonDeskBackend.Domain.Models;
 
@@ -10,14 +10,15 @@ public class AdventureFaker
     {
         return new Faker<Adventure>()
             .RuleFor(a => a.Id, f => Guid.NewGuid())
-            .RuleFor(a => a.CreatedAt, f => new Date().Past())
-            .RuleFor(a => a.Title, f => new Lorem().Sentance())
+            .RuleFor(a => a.CreatedAt, f => new Date().Past().ToUniversalTime())
+            .RuleFor(a => a.Title, f => new Lorem().Sentance(1, 2))
             .RuleFor(a => a.Description, f => new Lorem().Paragraph())
             .RuleFor(a => a.AuthorId, f => Guid.NewGuid());
     }
 
     public static Adventure MakeOne() => Make().Generate();
-    public static IEnumerable<Adventure> MakeMany(int count) {
+    public static IEnumerable<Adventure> MakeMany(int count)
+    {
         for (int i = 0; i < count; i++)
         {
             yield return MakeOne();

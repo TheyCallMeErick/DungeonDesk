@@ -1,8 +1,8 @@
-using Bogus;
+﻿using Bogus;
 using Bogus.Generators;
 using DungeonDeskBackend.Domain.Models;
 
-namespace DungeonDeskBackend.Application.Fakers; 
+namespace DungeonDeskBackend.Application.Fakers;
 
 public class UserFaker
 {
@@ -10,7 +10,7 @@ public class UserFaker
     {
         return new Faker<User>()
             .RuleFor(p => p.Id, f => Guid.NewGuid())
-            .RuleFor(p => p.CreatedAt, f => new Date().Past())
+            .RuleFor(p => p.CreatedAt, f => new Date().Past().ToUniversalTime())
             .RuleFor(p => p.Email, f => new Internet().Email())
             .RuleFor(p => p.Password, f => "")
             .RuleFor(p => p.Name, f => new Person().Name)

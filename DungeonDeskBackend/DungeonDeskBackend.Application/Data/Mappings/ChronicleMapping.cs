@@ -1,4 +1,4 @@
-using DungeonDeskBackend.Domain.Models;
+﻿using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,9 +10,10 @@ public class ChronicleMapping : IEntityTypeConfiguration<Chronicle>
     {
         builder.Property(e => e.Title)
               .IsRequired()
-              .HasMaxLength(200);
+              .HasMaxLength(512);
 
         builder.Property(e => e.Content)
+             .HasColumnType("text")
               .IsRequired();
 
         builder.HasOne(e => e.Session)

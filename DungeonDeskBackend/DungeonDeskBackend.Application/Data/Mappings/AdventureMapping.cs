@@ -1,4 +1,4 @@
-using DungeonDeskBackend.Domain.Models;
+﻿using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DungeonDeskBackend.Application.Data.Mappings;
@@ -11,7 +11,7 @@ public class AdventureMapping : IEntityTypeConfiguration<Adventure>
 
         builder.Property(e => e.Title)
               .IsRequired()
-              .HasMaxLength(200);
+              .HasMaxLength(255);
 
         builder.Property(e => e.Description)
               .HasMaxLength(1000);

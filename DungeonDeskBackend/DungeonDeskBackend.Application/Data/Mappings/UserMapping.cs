@@ -1,4 +1,4 @@
-using DungeonDeskBackend.Domain.Models;
+﻿using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,7 +21,7 @@ public class UserMapping : IEntityTypeConfiguration<User>
               .IsRequired();
 
         builder.Property(e => e.ProfilePictureFileName)
-              .HasMaxLength(200);
+              .HasMaxLength(1024);
 
         builder.HasMany(e => e.RefreshTokens)
                .WithOne(e => e.User)

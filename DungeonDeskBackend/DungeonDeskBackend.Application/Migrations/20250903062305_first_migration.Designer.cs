@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DungeonDeskBackend.Application.Migrations
 {
     [DbContext(typeof(DungeonDeskDbContext))]
-    [Migration("20250826015434_first-migration")]
-    partial class firstmigration
+    [Migration("20250903062305_first_migration")]
+    partial class first_migration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,8 +59,8 @@ namespace DungeonDeskBackend.Application.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -271,8 +271,8 @@ namespace DungeonDeskBackend.Application.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -308,8 +308,8 @@ namespace DungeonDeskBackend.Application.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -579,12 +579,12 @@ namespace DungeonDeskBackend.Application.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("PlayerId")
+                    b.Property<Guid?>("PlayerId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("ProfilePictureFileName")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -801,9 +801,7 @@ namespace DungeonDeskBackend.Application.Migrations
                 {
                     b.HasOne("DungeonDeskBackend.Domain.Models.Player", "Player")
                         .WithOne("User")
-                        .HasForeignKey("DungeonDeskBackend.Domain.Models.User", "PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DungeonDeskBackend.Domain.Models.User", "PlayerId");
 
                     b.Navigation("Player");
                 });
@@ -848,7 +846,8 @@ namespace DungeonDeskBackend.Application.Migrations
                 {
                     b.Navigation("PlayerDesks");
 
-                    b.Navigation("User");
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DungeonDeskBackend.Domain.Models.PlayerDesk", b =>

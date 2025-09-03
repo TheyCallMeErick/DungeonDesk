@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DungeonDeskBackend.Application.Migrations
 {
     /// <inheritdoc />
-    public partial class firstmigration : Migration
+    public partial class first_migration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -77,7 +77,7 @@ namespace DungeonDeskBackend.Application.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -103,8 +103,8 @@ namespace DungeonDeskBackend.Application.Migrations
                     Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     Password = table.Column<string>(type: "text", nullable: false),
-                    ProfilePictureFileName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    PlayerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProfilePictureFileName = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    PlayerId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -115,8 +115,7 @@ namespace DungeonDeskBackend.Application.Migrations
                         name: "FK_Users_Players_PlayerId",
                         column: x => x.PlayerId,
                         principalTable: "Players",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -147,7 +146,7 @@ namespace DungeonDeskBackend.Application.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Name = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     MaxPlayers = table.Column<int>(type: "integer", nullable: false),
@@ -338,7 +337,7 @@ namespace DungeonDeskBackend.Application.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Title = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
                     Content = table.Column<string>(type: "text", nullable: false),
                     SessionId = table.Column<Guid>(type: "uuid", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: false),

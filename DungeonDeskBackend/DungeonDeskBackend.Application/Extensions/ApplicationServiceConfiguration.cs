@@ -1,4 +1,4 @@
-
+﻿
 
 using DungeonDeskBackend.Application.Data;
 using DungeonDeskBackend.Application.Repositories;
@@ -35,18 +35,19 @@ public static class ApplicationServiceConfiguration
 
             if (configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development")
             {
-                x.UseSeeding((context,_) =>
-                {
-                    Seeder.Init();
-                    context.Set<User>().AddRange(Seeder.Users);
-                    context.Set<Player>().AddRange(Seeder.Players);
-                    context.Set<Adventure>().AddRange(Seeder.Adventures);
-                    context.Set<Chronicle>().AddRange(Seeder.Chronicles);
-                    context.Set<Desk>().AddRange(Seeder.Desks);
-                    context.Set<PlayerDesk>().AddRange(Seeder.PlayerDesks);
-                    context.Set<Session>().AddRange(Seeder.Sessions);
-                    context.SaveChanges();
-                });
+                x.UseSeeding((context, _) =>
+{
+    var seeder = new Seeder();
+    seeder.Init();
+    context.Set<User>().AddRange(seeder.Users);
+    context.Set<Player>().AddRange(seeder.Players);
+    context.Set<Adventure>().AddRange(seeder.Adventures);
+    context.Set<Chronicle>().AddRange(seeder.Chronicles);
+    context.Set<Desk>().AddRange(seeder.Desks);
+    context.Set<PlayerDesk>().AddRange(seeder.PlayerDesks);
+    context.Set<Session>().AddRange(seeder.Sessions);
+    context.SaveChanges();
+});
             }
         });
     }

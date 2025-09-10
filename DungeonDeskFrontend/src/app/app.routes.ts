@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { isAuthenticatedGuard } from './guards/is-authenticated-guard';
 
 export const routes: Routes = [
   {
@@ -29,6 +30,9 @@ export const routes: Routes = [
     ],
   },
   {
+    canActivate: [
+      isAuthenticatedGuard
+    ],
     path: 'tavern',
     loadComponent: () => import('./layouts/default/default').then((m) => m.Default),
     children: [

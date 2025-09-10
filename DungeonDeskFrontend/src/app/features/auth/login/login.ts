@@ -1,11 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { LoginService } from '../../../services/auth/login-service';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { TokenStorageService } from '../../../services/auth/token-storage-service';
+import { AuthService } from '../../../services/auth/auth-service';
 
 @Component({
   selector: 'app-login',
@@ -21,8 +23,10 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
   styleUrl: './login.css',
 })
 export class Login {
-  private loginService = inject(LoginService);
+  private authService = inject(AuthService);
   private formBuilderService = inject(NonNullableFormBuilder);
+  private router = inject(Router);
+  private tokenStorageService = inject(TokenStorageService);
 
   protected form = this.formBuilderService.group({
     email: this.formBuilderService.control('', {
@@ -37,12 +41,19 @@ export class Login {
     if (this.form.valid) {
       const { email, password } = this.form.value;
       if (email && password) {
-        this.loginService.login(email, password).subscribe({
-          next: (response) => {
-            console.log('Login successful', response);
+        this.authService.login(email, password).subscribe({
+          next: (response: any) => {
+            this.tokenStorageService.set(response.access_token, response.refresh_token)
+            this.authService.getCurrentUserByAccessToken(response.access_token).subscribe(() => {
+              this.router.navigate([])
+            })
           },
-          error: (error) => {
-            console.error('Login failed', error);
+          error: (response: HttpErrorResponse) => {
+            if (response.status === 401) {
+              this.form.setErrors({
+                wrongCredentials: true
+              })
+            }
           },
         });
         return;

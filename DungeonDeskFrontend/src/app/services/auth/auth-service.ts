@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { Observable, of } from 'rxjs';
+import User from '../../types/interfaces/user';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class LoginService {
+export class AuthService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/${environment.apiVersion}/auth/login`;
 
@@ -14,5 +16,11 @@ export class LoginService {
       email,
       password,
     });
+  }
+
+  getCurrentUserByAccessToken(accessToken: string): Observable<User> {
+    return of({
+      username: 'admin'
+    })
   }
 }

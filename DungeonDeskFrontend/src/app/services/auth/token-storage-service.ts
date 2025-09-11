@@ -14,4 +14,16 @@ export class TokenStorageService {
     this.localStorageToken.setItem(this.accessTokenKey, accessToken)
     this.localStorageToken.setItem(this.refreshTokenKey, refreshToken)
   }
+
+  getAccessToken() {
+    return this.localStorageToken.getItem(this.accessTokenKey)
+  }
+
+  getRefreshToken() {
+    return this.localStorageToken.getItem(this.accessTokenKey)
+  }
+
+  hasAccessToken() {
+    return this.localStorageToken.getItem(this.accessTokenKey) != null
+  }
 }

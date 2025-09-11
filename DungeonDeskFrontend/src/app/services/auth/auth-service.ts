@@ -23,4 +23,8 @@ export class AuthService {
       username: 'admin'
     })
   }
+
+  refreshAccessToken(token: string) {
+    return of({ token: 'fake-token' })
+  }
 }

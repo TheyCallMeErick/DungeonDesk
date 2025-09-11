@@ -8,6 +8,9 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { HttpErrorResponse } from '@angular/common/http';
 import { TokenStorageService } from '../../../services/auth/token-storage-service';
 import { AuthService } from '../../../services/auth/auth-service';
+import { LoggedInUserStore } from '../../../services/auth/stores/logged-in-user-store';
+import User from '../../../types/interfaces/user';
+import { switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -27,6 +30,7 @@ export class Login {
   private formBuilderService = inject(NonNullableFormBuilder);
   private router = inject(Router);
   private tokenStorageService = inject(TokenStorageService);
+  private loggedInUserStoreService = inject(LoggedInUserStore);
 
   protected form = this.formBuilderService.group({
     email: this.formBuilderService.control('', {
@@ -41,12 +45,13 @@ export class Login {
     if (this.form.valid) {
       const { email, password } = this.form.value;
       if (email && password) {
-        this.authService.login(email, password).subscribe({
+        this.authService.login(email, password).pipe(
+          tap((response: any) => this.tokenStorageService.set(response.access_token, response.refresh_token)),
+          switchMap((response: any) => this.authService.getCurrentUserByAccessToken(response.access_token)),
+          tap((user: User) => this.loggedInUserStoreService.setUser(user))
+        ).subscribe({
           next: (response: any) => {
-            this.tokenStorageService.set(response.access_token, response.refresh_token)
-            this.authService.getCurrentUserByAccessToken(response.access_token).subscribe(() => {
-              this.router.navigate([])
-            })
+            this.router.navigate([])
           },
           error: (response: HttpErrorResponse) => {
             if (response.status === 401) {

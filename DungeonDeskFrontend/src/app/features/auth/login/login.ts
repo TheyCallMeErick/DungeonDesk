@@ -45,22 +45,29 @@ export class Login {
     if (this.form.valid) {
       const { email, password } = this.form.value;
       if (email && password) {
-        this.authService.login(email, password).pipe(
-          tap((response: any) => this.tokenStorageService.set(response.access_token, response.refresh_token)),
-          switchMap((response: any) => this.authService.getCurrentUserByAccessToken(response.access_token)),
-          tap((user: User) => this.loggedInUserStoreService.setUser(user))
-        ).subscribe({
-          next: (response: any) => {
-            this.router.navigate([])
-          },
-          error: (response: HttpErrorResponse) => {
-            if (response.status === 401) {
-              this.form.setErrors({
-                wrongCredentials: true
-              })
-            }
-          },
-        });
+        this.authService
+          .login(email, password)
+          .pipe(
+            tap((response: any) =>
+              this.tokenStorageService.set(response.access_token, response.refresh_token)
+            ),
+            switchMap((response: any) =>
+              this.authService.getCurrentUserByAccessToken(response.access_token)
+            ),
+            tap((user: User) => this.loggedInUserStoreService.setUser(user))
+          )
+          .subscribe({
+            next: (response: any) => {
+              this.router.navigate(['tavern/quest-board']);
+            },
+            error: (response: HttpErrorResponse) => {
+              if (response.status === 401) {
+                this.form.setErrors({
+                  wrongCredentials: true,
+                });
+              }
+            },
+          });
         return;
       }
     }

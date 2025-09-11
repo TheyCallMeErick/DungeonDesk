@@ -33,8 +33,7 @@ public class TokenManagerService : ITokenManagerService
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-            new Claim("id", user.Id.ToString())
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
         };
 
         var expirationTime = DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpirationTimeInMinutes"] ?? string.Empty));

@@ -2,6 +2,7 @@ using DungeonDeskBackend.Application.Data;
 using DungeonDeskBackend.Application.DTOs.Inputs.Auth;
 using DungeonDeskBackend.Application.DTOs.Outputs;
 using DungeonDeskBackend.Application.DTOs.Outputs.Auth;
+using DungeonDeskBackend.Application.DTOs.Outputs.User;
 using DungeonDeskBackend.Application.Services.Interfaces;
 using DungeonDeskBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -79,5 +80,24 @@ public class AuthService : IAuthService
         return OperationResultDTO<UserAuthOutputDTO>
             .SuccessResult()
             .WithData(result.Data);
+    }
+
+    public async Task<OperationResultDTO<UserOutputDTO>> GetCurrentUserAsync(string userId)
+    {
+        var result = await _context.Users.FirstOrDefaultAsync(u => u.Id.ToString() == userId);
+        if (result == null)
+        {
+            return OperationResultDTO<UserOutputDTO>.FailureResult("Failed to get user from token.");
+        }
+        return OperationResultDTO<UserOutputDTO>
+            .SuccessResult()
+            .WithData(new UserOutputDTO
+            (
+                Id : result.Id,
+                Username : result.Username,
+                Name : result.Name,
+                Email : result.Email,
+                ProfilePictureFileName : result.ProfilePictureFileName
+            ));
     }
 }

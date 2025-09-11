@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using DungeonDeskBackend.Api.DTOs.Requests;
 using DungeonDeskBackend.Api.DTOs.Responses;
 using DungeonDeskBackend.Application.DTOs.Inputs.Auth;
@@ -43,8 +44,8 @@ public class AuthController : ControllerBase
         }
         return Ok(new ResponseLoginDTO
         (
-            AccessToken : result.Data!.AccessToken,
-            RefreshToken : result.Data.RefreshToken
+            AccessToken: result.Data!.AccessToken,
+            RefreshToken: result.Data.RefreshToken
         ));
     }
 
@@ -76,8 +77,8 @@ public class AuthController : ControllerBase
             return BadRequest("Refresh token is required.");
         }
         var result = await _authService.RefreshAccessTokenAsync(
-            Guid.Parse(refreshToken), 
-            HttpContext.Connection.RemoteIpAddress?.ToString() ?? string.Empty, 
+            Guid.Parse(refreshToken),
+            HttpContext.Connection.RemoteIpAddress?.ToString() ?? string.Empty,
             HttpContext.Request.Headers["User-Agent"].ToString()
         );
         if (!result.Success)
@@ -89,5 +90,22 @@ public class AuthController : ControllerBase
             AccessToken: result.Data!.AccessToken,
             RefreshToken: result.Data.RefreshToken
         ));
+    }
+
+    [HttpGet("current-user")]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        Console.WriteLine(userId);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized("User ID not found in token.");
+        }
+        var result = await _authService.GetCurrentUserAsync(userId);
+        if (!result.Success)
+        {
+            return BadRequest(result.Message);
+        }
+        return Ok(result.Data);
     }
 }

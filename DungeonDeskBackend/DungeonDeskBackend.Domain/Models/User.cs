@@ -10,5 +10,4 @@ public class User : BaseModel
 
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     public Player? Player { get; set; }
-    public Guid? PlayerId { get; set; }
 }

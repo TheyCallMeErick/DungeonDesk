@@ -28,8 +28,8 @@ public class UserMapping : IEntityTypeConfiguration<User>
                .HasForeignKey(rt => rt.UserId)
                .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(e => e.Player)
-               .WithOne(p => p.User)
-               .HasForeignKey<User>(u => u.PlayerId);
+        builder.HasOne(u => u.Player)
+            .WithOne(p => p.User)
+            .HasForeignKey<Player>(p => p.UserId);
     }
 }
